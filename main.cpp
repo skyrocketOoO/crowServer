@@ -7,6 +7,16 @@
 
 using json = nlohmann::json;
 
+namespace Rules {
+  string Required() {
+    return {ValidationRuleType::Required, std::nullopt};
+  }
+
+  string MaxLength(int val) {
+      return {ValidationRuleType::MaxLength, val};
+  }
+}
+
 // Metadata structure
 struct FieldMeta {
     std::string fieldName;
