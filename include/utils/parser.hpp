@@ -1,30 +1,15 @@
 #include "rfl/json.hpp"
 #include "rfl.hpp"
+#include "rfl/Processors.hpp"
+
 
 template <typename T>
-T parseJsonToStruct(std::string jsonStr){
-  return rfl::json::read<T>(jsonStr).value();
+std::pair<T*, std::string> parseJsonToStruct(const std::string& jsonStr) {
+    try {
+        auto parsedResult = rfl::json::read<T>(jsonStr);
+        return {new T(parsedResult.value()), ""};  // Return a new object on success
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        return {nullptr, e.what()};  // Return nullptr and the error message
+    }
 }
-
-// typedef struct yyjson_val yyjson_val;
-// struct YYJSONInputVar {
-//   YYJSONInputVar() : val_(nullptr) {}
-//   YYJSONInputVar(yyjson_val* _val) : val_(_val) {}
-//   yyjson_val* val_;
-// };
-// struct Reader {
-//   struct YYJSONInputVar {
-//     YYJSONInputVar() : val_(nullptr) {}
-//     YYJSONInputVar(yyjson_val* _val) : val_(_val) {}
-//     yyjson_val* val_;
-//   };
-//   using InputVarType = YYJSONInputVar;
-// };
-
-// using InputVarType = typename Reader::InputVarType;
-
-// template <class T, class... Ps>
-// auto read(const InputVarType& _obj) {
-//   const auto r = Reader();
-//   return Parser<T, Processors<Ps...>>::read(r, _obj);
-// }

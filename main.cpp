@@ -16,26 +16,25 @@ int main() {
             struct Request {
                 std::string id;  
                 std::string name;
-
-                static std::vector<std::string> metadata() {
-                    return {"id", "name"};
-                }
-
                 struct Nested {
                     int value;
-                };
+                } nested;
+                
             };
             
-            try {
-                auto request = parseJsonToStruct<Request>(req.body);
-                // Process the request further (e.g., save to database, etc.)
-                std::cout << "Parsed Request: id=" << request.id << ", name=" << request.name << std::endl;
-                return crow::response(200, "Request successfully processed");
-            }catch (const std::exception& e) {
-                // Handle any errors during parsing
-                std::cout << "Error: " << e.what() << std::endl;
-                return crow::response(400, "Invalid JSON format");
+            auto [result, error] = parseJsonToStruct<Request>(req.body);
+            if (error != "") {
+                return crow::response(400, error);
             }
+            
+            // Print the Nested.value field
+            std::cout << "Parsed Request: id=" << result->id 
+                      << ", name=" << result->name  
+                      << ", nested.value=" << result->nested.value << std::endl;
+
+
+
+            return crow::response(200, "Request successfully processed");
         });
 
     // Run the server
