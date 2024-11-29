@@ -1,6 +1,10 @@
 file(REMOVE_RECURSE
   "CMakeFiles/test.dir/main.cpp.o"
   "CMakeFiles/test.dir/main.cpp.o.d"
+  "CMakeFiles/test.dir/src/reflectcpp.cpp.o"
+  "CMakeFiles/test.dir/src/reflectcpp.cpp.o.d"
+  "CMakeFiles/test.dir/src/reflectcpp_json.cpp.o"
+  "CMakeFiles/test.dir/src/reflectcpp_json.cpp.o.d"
   "test"
   "test.pdb"
 )

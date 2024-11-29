@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = 
+CXX_INCLUDES = -I/home/qy/skyrocketOoO/crowServer/test/include -I/home/qy/skyrocketOoO/crowServer/test/include/rfl -I/home/qy/skyrocketOoO/crowServer/test -I/home/qy/skyrocketOoO/crowServer/test/yyjson/src
 
 CXX_FLAGS = -std=gnu++20
 

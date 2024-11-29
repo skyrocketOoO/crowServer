@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/qy/skyrocketOoO/crowServer/test/CMakeFiles /home/qy/skyrocketOoO/crowServer/test//CMakeFiles/progress.marks
@@ -129,6 +174,19 @@ test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
 .PHONY : test/fast
 
+#=============================================================================
+# Target rules for targets named yyjson
+
+# Build rule for target.
+yyjson: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yyjson
+.PHONY : yyjson
+
+# fast build rule for target.
+yyjson/fast:
+	$(MAKE) $(MAKESILENT) -f yyjson/CMakeFiles/yyjson.dir/build.make yyjson/CMakeFiles/yyjson.dir/build
+.PHONY : yyjson/fast
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -153,6 +211,54 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/reflectcpp.o: src/reflectcpp.cpp.o
+.PHONY : src/reflectcpp.o
+
+# target to build an object file
+src/reflectcpp.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp.cpp.o
+.PHONY : src/reflectcpp.cpp.o
+
+src/reflectcpp.i: src/reflectcpp.cpp.i
+.PHONY : src/reflectcpp.i
+
+# target to preprocess a source file
+src/reflectcpp.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp.cpp.i
+.PHONY : src/reflectcpp.cpp.i
+
+src/reflectcpp.s: src/reflectcpp.cpp.s
+.PHONY : src/reflectcpp.s
+
+# target to generate assembly for a file
+src/reflectcpp.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp.cpp.s
+.PHONY : src/reflectcpp.cpp.s
+
+src/reflectcpp_json.o: src/reflectcpp_json.cpp.o
+.PHONY : src/reflectcpp_json.o
+
+# target to build an object file
+src/reflectcpp_json.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp_json.cpp.o
+.PHONY : src/reflectcpp_json.cpp.o
+
+src/reflectcpp_json.i: src/reflectcpp_json.cpp.i
+.PHONY : src/reflectcpp_json.i
+
+# target to preprocess a source file
+src/reflectcpp_json.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp_json.cpp.i
+.PHONY : src/reflectcpp_json.cpp.i
+
+src/reflectcpp_json.s: src/reflectcpp_json.cpp.s
+.PHONY : src/reflectcpp_json.s
+
+# target to generate assembly for a file
+src/reflectcpp_json.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/reflectcpp_json.cpp.s
+.PHONY : src/reflectcpp_json.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -160,11 +266,22 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... yyjson"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/reflectcpp.o"
+	@echo "... src/reflectcpp.i"
+	@echo "... src/reflectcpp.s"
+	@echo "... src/reflectcpp_json.o"
+	@echo "... src/reflectcpp_json.i"
+	@echo "... src/reflectcpp_json.s"
 .PHONY : help
 
 

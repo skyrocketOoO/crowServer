@@ -1,3 +1,14 @@
 /home/qy/skyrocketOoO/crowServer/test/CMakeFiles/test.dir
 /home/qy/skyrocketOoO/crowServer/test/CMakeFiles/edit_cache.dir
 /home/qy/skyrocketOoO/crowServer/test/CMakeFiles/rebuild_cache.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/list_install_components.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/install.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/install/local.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/install/strip.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/yyjson.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/edit_cache.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/rebuild_cache.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/list_install_components.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/install.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/install/local.dir
+/home/qy/skyrocketOoO/crowServer/test/yyjson/CMakeFiles/install/strip.dir

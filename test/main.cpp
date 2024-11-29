@@ -17,5 +17,5 @@ const std::string json_string = rfl::json::write(homer);
 auto homer2 = rfl::json::read<Person>(json_string).value();
 
 int main(){
-    std::cout << "hi";
+    std::cout << homer2.age;
 }
