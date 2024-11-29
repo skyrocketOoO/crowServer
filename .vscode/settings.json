@@ -80,6 +80,7 @@
     "csetjmp": "cpp",
     "strstream": "cpp",
     "charconv": "cpp",
-    "cfenv": "cpp"
+    "cfenv": "cpp",
+    "*.inc": "cpp"
   }
 }
