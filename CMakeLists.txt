@@ -1,33 +1,20 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
+project(test_project)
 
-# Project name
-project(crowServer)
-
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add include directories
-include_directories(. asio/include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# Add the executable target
-add_executable(app 
-    main.cpp 
-    validator/validator.cpp
+# Add source files
+set(SOURCES
+    main.cpp
+    src/reflectcpp.cpp
+    src/reflectcpp_json.cpp
+    # Add other source files as needed
 )
 
-add_compile_options(-std=c++20)
-
-
-# Link additional libraries if needed (for Crow dependencies)
-# Assuming you need OpenSSL for Crow
-find_package(OpenSSL REQUIRED)
-target_link_libraries(app PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-
-# Ensure Asio or other libraries are properly included
-target_include_directories(app PRIVATE asio/include)
-
-# Optionally set warnings and debug options for development
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(app PRIVATE -Wall -Wextra -pedantic)
-endif()
+# Add executable
+add_executable(test ${SOURCES})

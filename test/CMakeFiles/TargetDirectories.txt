@@ -1,0 +1,3 @@
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/test.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/edit_cache.dir
+/home/qy/skyrocketOoO/crowServer/test/CMakeFiles/rebuild_cache.dir
