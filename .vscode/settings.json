@@ -76,6 +76,10 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "csetjmp": "cpp",
+    "strstream": "cpp",
+    "charconv": "cpp",
+    "cfenv": "cpp"
   }
 }

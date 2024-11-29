@@ -1,8 +1,6 @@
 #include <rfl/json.hpp>
 #include <rfl.hpp>
 
-
-
 int main(){
     struct Person {
         std::string first_name;
