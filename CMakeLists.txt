@@ -28,5 +28,5 @@ set(
   src/reflectcpp_json.cpp
 )
 
-add_executable(app main.cpp)
+add_executable(app main.cpp include/utils/validator.cpp)
 target_link_libraries(app PRIVATE yyjson reflect-cpp)
