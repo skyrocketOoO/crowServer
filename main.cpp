@@ -50,6 +50,5 @@ int main() {
             return crow::response(200, "Request successfully processed");
         });
 
-    // Run the server
     app.port(18080).multithreaded().run();
 }
