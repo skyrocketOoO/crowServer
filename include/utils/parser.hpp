@@ -6,7 +6,7 @@
 template <typename T>
 std::pair<T*, std::string> parseJsonToStruct(const std::string& jsonStr) {
     try {
-        auto parsedResult = rfl::json::read<T, rfl::DefaultIfMissing>(jsonStr);
+        auto parsedResult = rfl::json::read<T, rfl::NoExtraFields>(jsonStr);
         return {new T(parsedResult.value()), ""};  // Return a new object on success
     } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;

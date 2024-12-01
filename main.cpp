@@ -17,7 +17,8 @@ int main() {
         ([](const crow::request& req) {
             struct Request {
                 std::string id;
-                std::string name;
+                std::optional<std::string> name;
+
                 struct Nested {
                     int value;
 

@@ -26,19 +26,30 @@ namespace Rule {
 template <typename T>
 struct is_user_defined : std::integral_constant<bool, !std::is_fundamental<T>::value && !std::is_enum<T>::value && !std::is_same<T, std::string>::value> {};
 
+template <typename T, typename = void>
+struct has_metadata : std::false_type {};
+
+template <typename T>
+struct has_metadata<T, std::void_t<decltype(std::declval<T>().metadata())>> : std::true_type {};
+
 
 template <typename T>
 std::string validate(T obj) {
   const auto view = rfl::to_view(obj);
   std::string err;
+  std::array metadata = obj.metadata();
 
-  view.apply([&err, &obj](const auto& f) {
-    if constexpr (std::is_class_v<std::decay_t<decltype(*f.value())>> && is_user_defined<std::decay_t<decltype(*f.value())>>::value) {
-        std::cout << "Type: Struct" << std::endl;
-        err = validate(*f.value());
-        return;
-    } 
-    for (const FieldMeta& fieldMeta : obj.metadata()) {
+  view.apply([&err, &metadata](const auto& f) {
+    if constexpr (
+      std::is_class_v<std::decay_t<decltype(*f.value())>> && 
+      is_user_defined<std::decay_t<decltype(*f.value())>>::value &&
+      has_metadata<std::decay_t<decltype(*f.value())>>::value
+      ) {
+      err = validate(*f.value());
+      return;
+    }
+
+    for (const FieldMeta& fieldMeta : metadata) {
       if (fieldMeta.name != f.name()) {
         continue;
       }
