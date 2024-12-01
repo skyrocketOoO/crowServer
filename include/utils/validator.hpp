@@ -17,68 +17,65 @@ namespace Rule {
   namespace String{
     std::string MaxLength(int val);
   }
+
+  namespace Number{
+    std::string Min(int val);
+  }
 }
+
+template <typename T>
+struct is_user_defined : std::integral_constant<bool, !std::is_fundamental<T>::value && !std::is_enum<T>::value && !std::is_same<T, std::string>::value> {};
+
 
 template <typename T>
 std::string validate(T obj) {
   const auto view = rfl::to_view(obj);
   std::string err;
 
-  view.apply([&err, &obj](const auto& f) { // Capture err and obj by reference
-      for (const FieldMeta& fieldMeta : obj.metadata()) {
-          if (fieldMeta.name == f.name()) {
-              auto value = rfl::json::write(*f.value());
+  view.apply([&err, &obj](const auto& f) {
+    if constexpr (std::is_class_v<std::decay_t<decltype(*f.value())>> && is_user_defined<std::decay_t<decltype(*f.value())>>::value) {
+        std::cout << "Type: Struct" << std::endl;
+        err = validate(*f.value());
+        return;
+    } else {
+        std::cout << "Type: Not a struct" << std::endl;
+    }
 
-              for (const auto& rule : fieldMeta.rules) {
-                  if (rule == Rule::Required()) {
-                      if (value.empty()) {
-                          err = "Field '" + fieldMeta.name + "' is required";
-                          return; // Break out of the lambda
-                      }
-                  } else if (rule.rfind("maxLength:", 0) == 0) {
-                      int maxLen = std::stoi(rule.substr(10));
-
-                      if (value.size() > maxLen) {
-                          err = "Field '" + fieldMeta.name + "' exceeds max length of " + std::to_string(maxLen);
-                          return; // Break out of the lambda
-                      }
-                  } else {
-                      err = "Unknown validation rule for field '" + fieldMeta.name + "'";
-                      return; // Break out of the lambda
-                  }
-              }
-          }
+    for (const FieldMeta& fieldMeta : obj.metadata()) {
+      if (fieldMeta.name != f.name()) {
+        continue;
       }
+      auto value = rfl::json::write(*f.value());
+
+      for (const std::string& rule : fieldMeta.rules) {
+        // std::cout << rule << std::endl;
+        if (rule == Rule::Required()) {
+          if (value.empty()) {
+              err = "Field '" + fieldMeta.name + "' is required";
+              return;
+          }
+        } else if (rule.rfind("maxLength:", 0) == 0) {
+          int maxLen = std::stoi(rule.substr(10));
+
+          if (value.size() > maxLen) {
+              err = "Field '" + fieldMeta.name + "' exceeds max length of " + std::to_string(maxLen);
+              return; 
+          }
+        } else if (rule.rfind("min:", 0) == 0){
+          int min = std::stoi(rule.substr(4));
+          if (std::stoi(value) < min) {
+              err = "Field '" + fieldMeta.name + "' small to  min " + std::to_string(min);
+              return; 
+          }
+        }else {
+          err = "Unknown validation rule for field '" + fieldMeta.name + "'";
+          return; 
+        }
+      }
+    }
   });
 
-
-    // for (const FieldMeta& fieldMeta : obj.metadata()) {
-    //     for (const auto& rule : fieldMeta.rules) {
-    //       if (rule == Rule::Required()){
-
-    //       }else if (rule.rfind("maxLength:", 0) == 0){
-    //         int maxLen = std::stoi(rule.substr(10));
-    //         auto field = *rfl::get<fieldMeta.name>(view);
-            
-    //         if (field != nullptr){
-    //           if (field.length() > maxLen) {
-    //             return "Field '" + fieldMeta.name + "' exceeds max length of " + std::to_string(maxLen);
-    //           }
-    //         }else{
-    //           return "Field '" + fieldMeta.name + "' is required";
-    //         }
-    //       }
-    //     }
-    // }
-
-    // Check nested structs
-    // if constexpr (requires { obj.nested; }) {
-    //     auto nestedError = validate(obj.nested);
-    //     if (!nestedError.empty()) {
-    //         return nestedError;
-    //     }
-    // }
-    return err;
+  return err;
 }
 
 #endif // VALIDATOR_HPP

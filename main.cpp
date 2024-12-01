@@ -23,7 +23,7 @@ int main() {
 
                     auto metadata() {
                         return std::array{
-                            FieldMeta("value", {Rule::Required()}),
+                            FieldMeta("value", {Rule::Required(), Rule::Number::Min(0)}),
                         };
                     }
                 } nested;
@@ -37,13 +37,13 @@ int main() {
                 }
             };
             
-            auto [result, error] = parseJsonToStruct<Request>(req.body);
-            if (error != "") {
-                return crow::response(400, error);
+            auto [result, err] = parseJsonToStruct<Request>(req.body);
+            if (err != "") {
+                return crow::response(400, "parse" + err);
             }
 
             if (std::string err = validate(*result); err != ""){
-                return crow::response(400, err);
+                return crow::response(400, "validate" + err);
             };
 
             return crow::response(200, "Request successfully processed");

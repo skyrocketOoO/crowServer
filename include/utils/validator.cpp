@@ -11,4 +11,9 @@ namespace Rule {
         }
     }
 
+    namespace Number{
+        std::string Min(int val){
+            return "min:" + std::to_string(val);
+        }
+    }
 }
