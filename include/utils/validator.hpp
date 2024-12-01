@@ -37,10 +37,7 @@ std::string validate(T obj) {
         std::cout << "Type: Struct" << std::endl;
         err = validate(*f.value());
         return;
-    } else {
-        std::cout << "Type: Not a struct" << std::endl;
-    }
-
+    } 
     for (const FieldMeta& fieldMeta : obj.metadata()) {
       if (fieldMeta.name != f.name()) {
         continue;
