@@ -55,6 +55,9 @@ std::string validate(T obj) {
   
     // main logic
     view.apply([&err, &metadatas](const auto& field) {
+      if (err != ""){
+        return;
+      }
       auto& value = *field.value();
       std::any valueAny;
       using FieldType = std::decay_t<decltype(*field.value())>;
@@ -85,11 +88,10 @@ std::string validate(T obj) {
           try {
               if (rule.rfind("maxLen:", 0) == 0) {
                   int maxLen = std::stoi(rule.substr(7));
-                  std::cout << valueAny.type().name() << std::endl;
                   if (valueAny.type() == typeid(std::string)) {
                     if (std::any_cast<std::string>(valueAny).size() > maxLen) {
-                        err = "Field '" + metadata.name + "' exceeds max length of " + std::to_string(maxLen);
-                        return;
+                      err = "Field '" + metadata.name + "' exceeds max length of " + std::to_string(maxLen);
+                      return;
                     }
                   } else {
                       err = "Field '" + metadata.name + "' does not support size()";
