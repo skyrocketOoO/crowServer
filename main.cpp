@@ -24,7 +24,7 @@ int main() {
 
                     auto metadata() {
                         return std::array{
-                            FieldMeta("value", {Rule::Required(), Rule::Number::Min(0)}),
+                            FieldMeta("value", {Rule::Number::Min(0)}),
                         };
                     }
                 } nested;
@@ -32,8 +32,8 @@ int main() {
 
                 auto metadata() {
                     return std::array{
-                        FieldMeta("id", {Rule::Required()}),
-                        FieldMeta("name", {Rule::Required(), Rule::String::MaxLength(10)}),
+                        FieldMeta("id", {}),
+                        FieldMeta("name", {Rule::String::MaxLen(10)}),
                     };
                 }
             };

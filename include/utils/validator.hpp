@@ -5,6 +5,11 @@
 #include <vector>
 #include "rfl.hpp"
 #include "rfl/json.hpp"
+#include <any>
+#include <array>
+#include <iostream>
+#include <typeinfo>
+#include <stdexcept>
 
 struct FieldMeta {
     std::string name;
@@ -12,14 +17,15 @@ struct FieldMeta {
 };
 
 namespace Rule {
-  std::string Required();
-
   namespace String{
-    std::string MaxLength(int val);
+    std::string MaxLen(int val);
+    std::string RegExp(const std::string);
+    std::string In(const std::vector<std::string>);
   }
 
   namespace Number{
     std::string Min(int val);
+    std::string Max(int val);
   }
 }
 
@@ -32,58 +38,86 @@ struct has_metadata : std::false_type {};
 template <typename T>
 struct has_metadata<T, std::void_t<decltype(std::declval<T>().metadata())>> : std::true_type {};
 
+template <typename T>
+struct is_optional : std::false_type {};
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {};
+// Helper variable for convenience (C++17)
+template <typename T>
+inline constexpr bool is_optional_v = is_optional<T>::value;
+
 
 template <typename T>
 std::string validate(T obj) {
-  const auto view = rfl::to_view(obj);
-  std::string err;
-  std::array metadata = obj.metadata();
-
-  view.apply([&err, &metadata](const auto& f) {
-    if constexpr (
-      std::is_class_v<std::decay_t<decltype(*f.value())>> && 
-      is_user_defined<std::decay_t<decltype(*f.value())>>::value &&
-      has_metadata<std::decay_t<decltype(*f.value())>>::value
-      ) {
-      err = validate(*f.value());
-      return;
-    }
-
-    for (const FieldMeta& fieldMeta : metadata) {
-      if (fieldMeta.name != f.name()) {
-        continue;
+    const auto view = rfl::to_view(obj);
+    std::string err;
+    std::array metadatas = obj.metadata();
+  
+    // main logic
+    view.apply([&err, &metadatas](const auto& field) {
+      auto& value = *field.value();
+      std::any valueAny;
+      using FieldType = std::decay_t<decltype(*field.value())>;
+      if constexpr (is_optional_v<FieldType>) { 
+        if (!value.has_value()) {
+            return;
+        }
+        valueAny = value.value();
+      }else{
+        valueAny = value;
       }
-      auto value = rfl::json::write(*f.value());
 
-      for (const std::string& rule : fieldMeta.rules) {
-        // std::cout << rule << std::endl;
-        if (rule == Rule::Required()) {
-          if (value.empty()) {
-              err = "Field '" + fieldMeta.name + "' is required";
+      if constexpr (
+        std::is_class_v<FieldType> && 
+        is_user_defined<FieldType>::value &&
+        has_metadata<FieldType>::value
+      ) {
+        err = validate(value);
+        return; 
+      }
+
+      for (const FieldMeta& metadata : metadatas) {
+        if (metadata.name != field.name()) {
+            continue;
+        }
+
+        for (const std::string& rule : metadata.rules) {
+          try {
+              if (rule.rfind("maxLen:", 0) == 0) {
+                  int maxLen = std::stoi(rule.substr(7));
+                  std::cout << valueAny.type().name() << std::endl;
+                  if (valueAny.type() == typeid(std::string)) {
+                    if (std::any_cast<std::string>(valueAny).size() > maxLen) {
+                        err = "Field '" + metadata.name + "' exceeds max length of " + std::to_string(maxLen);
+                        return;
+                    }
+                  } else {
+                      err = "Field '" + metadata.name + "' does not support size()";
+                      return;
+                  }
+              } else if (rule.rfind("min:", 0) == 0) {
+                  int min = std::stoi(rule.substr(4));
+                  if (valueAny.type() == typeid(int)) {
+                      if (std::any_cast<int>(valueAny) < min) {
+                          err = "Field '" + metadata.name + "' is smaller than min " + std::to_string(min);
+                          return;
+                      }
+                  } else {
+                      err = "Field '" + metadata.name + "' does not support comparison";
+                      return;
+                  }
+              } else {
+                  err = "Unknown validation rule for field '" + metadata.name + "'";
+                  return;
+              }
+          } catch (const std::exception& e) {
+              err = e.what();
               return;
           }
-        } else if (rule.rfind("maxLength:", 0) == 0) {
-          int maxLen = std::stoi(rule.substr(10));
-
-          if (value.size() > maxLen) {
-              err = "Field '" + fieldMeta.name + "' exceeds max length of " + std::to_string(maxLen);
-              return; 
-          }
-        } else if (rule.rfind("min:", 0) == 0){
-          int min = std::stoi(rule.substr(4));
-          if (std::stoi(value) < min) {
-              err = "Field '" + fieldMeta.name + "' small to  min " + std::to_string(min);
-              return; 
-          }
-        }else {
-          err = "Unknown validation rule for field '" + fieldMeta.name + "'";
-          return; 
         }
       }
-    }
-  });
+    });
 
-  return err;
+    return err;
 }
-
 #endif // VALIDATOR_HPP
