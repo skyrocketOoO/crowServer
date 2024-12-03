@@ -7,6 +7,7 @@
 - refactor to not too much layer code
 - add naming conversion strategy or customize parse method
 - refactor the file , not in one file
+- Generate Request struct based on api specification
 
 
 https://github.com/go-playground/validator?tab=readme-ov-file

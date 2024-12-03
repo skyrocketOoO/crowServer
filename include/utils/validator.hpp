@@ -53,7 +53,6 @@ std::string validate(T obj) {
     std::string err;
     std::array metadatas = obj.metadata();
   
-    // main logic
     view.apply([&err, &metadatas](const auto& field) {
       if (err != ""){
         return;
