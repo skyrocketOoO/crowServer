@@ -5,5 +5,16 @@ cd build
 cmake ..
 make
 
-curl -X POST -H "Content-Type: application/json" -d '{"name":"Alice"}' http://localhost:18080/add_json
+curl -X POST http://localhost:18080/ \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "1222", 
+           "nested": {
+               "value": -1, "desc":"abc"
+           }
+         }'
 ```
+Reference
+- https://github.com/getml/reflect-cpp
+- https://github.com/ibireme/yyjson
+

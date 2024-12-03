@@ -57,6 +57,8 @@ std::string validate(T obj) {
       if (err != ""){
         return;
       }
+      
+      // check and unwrapped std::optional
       auto& value = *field.value();
       std::any valueAny;
       using FieldType = std::decay_t<decltype(*field.value())>;
@@ -69,6 +71,7 @@ std::string validate(T obj) {
         valueAny = value;
       }
 
+      // check nested
       if constexpr (
         std::is_class_v<FieldType> && 
         is_user_defined<FieldType>::value &&
