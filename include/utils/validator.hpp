@@ -50,12 +50,8 @@ template <typename T>
 std::string validate(T obj) {
     const auto view = rfl::to_view(obj);
     std::string err;
-    if constexpr (!has_metadata<T>::value) {
-      return "";
-    }
-    std::array metadatas = obj.metadata();
   
-    view.apply([&err, &metadatas](const auto& field) {
+    view.apply([&err, &obj](const auto& field) {
       if (err != ""){
         return;
       }
@@ -82,6 +78,11 @@ std::string validate(T obj) {
         err = validate(value);
         return; 
       }
+
+      if constexpr (!has_metadata<T>::value) {
+        return "";
+      }
+      std::array metadatas = obj.metadata();
 
       for (const FieldMeta& metadata : metadatas) {
         if (metadata.name != field.name()) {
