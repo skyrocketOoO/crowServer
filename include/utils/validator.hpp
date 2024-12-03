@@ -79,47 +79,46 @@ std::string validate(T obj) {
         return; 
       }
 
-      if constexpr (!has_metadata<T>::value) {
-        return "";
-      }
-      std::array metadatas = obj.metadata();
+      using objType = std::decay_t<decltype(obj)>;
+      if constexpr (has_metadata<objType>::value) {
+        auto metadatas = obj.metadata();
+        for (const FieldMeta& metadata : metadatas) {
+          if (metadata.name != field.name()) {
+              continue;
+          }
 
-      for (const FieldMeta& metadata : metadatas) {
-        if (metadata.name != field.name()) {
-            continue;
-        }
-
-        for (const std::string& rule : metadata.rules) {
-          try {
-              if (rule.rfind("maxLen:", 0) == 0) {
-                  int maxLen = std::stoi(rule.substr(7));
-                  if (valueAny.type() == typeid(std::string)) {
-                    if (std::any_cast<std::string>(valueAny).size() > maxLen) {
-                      err = "Field '" + metadata.name + "' exceeds max length of " + std::to_string(maxLen);
-                      return;
-                    }
-                  } else {
-                      err = "Field '" + metadata.name + "' does not support size()";
-                      return;
-                  }
-              } else if (rule.rfind("min:", 0) == 0) {
-                  int min = std::stoi(rule.substr(4));
-                  if (valueAny.type() == typeid(int)) {
-                      if (std::any_cast<int>(valueAny) < min) {
-                          err = "Field '" + metadata.name + "' is smaller than min " + std::to_string(min);
-                          return;
+          for (const std::string& rule : metadata.rules) {
+            try {
+                if (rule.rfind("maxLen:", 0) == 0) {
+                    int maxLen = std::stoi(rule.substr(7));
+                    if (valueAny.type() == typeid(std::string)) {
+                      if (std::any_cast<std::string>(valueAny).size() > maxLen) {
+                        err = "Field '" + metadata.name + "' exceeds max length of " + std::to_string(maxLen);
+                        return;
                       }
-                  } else {
-                      err = "Field '" + metadata.name + "' does not support comparison";
-                      return;
-                  }
-              } else {
-                  err = "Unknown validation rule for field '" + metadata.name + "'";
-                  return;
-              }
-          } catch (const std::exception& e) {
-              err = e.what();
-              return;
+                    } else {
+                        err = "Field '" + metadata.name + "' does not support size()";
+                        return;
+                    }
+                } else if (rule.rfind("min:", 0) == 0) {
+                    int min = std::stoi(rule.substr(4));
+                    if (valueAny.type() == typeid(int)) {
+                        if (std::any_cast<int>(valueAny) < min) {
+                            err = "Field '" + metadata.name + "' is smaller than min " + std::to_string(min);
+                            return;
+                        }
+                    } else {
+                        err = "Field '" + metadata.name + "' does not support comparison";
+                        return;
+                    }
+                } else {
+                    err = "Unknown validation rule for field '" + metadata.name + "'";
+                    return;
+                }
+            } catch (const std::exception& e) {
+                err = e.what();
+                return;
+            }
           }
         }
       }

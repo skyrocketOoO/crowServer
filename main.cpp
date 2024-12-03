@@ -29,12 +29,11 @@ int main() {
                     }
                 } nested;
                 
-                auto metadata() {
-                    return std::array{
-                        FieldMeta("id", {}),
-                        FieldMeta("name", {Rule::String::MaxLen(10)}),
-                    };
-                }
+                // auto metadata() {
+                //     return std::array{
+                //         FieldMeta("name", {Rule::String::MaxLen(10)}),
+                //     };
+                // }
             };
             
             auto [result, err] = parseJsonToStruct<Request>(req.body);

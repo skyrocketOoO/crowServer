@@ -8,9 +8,9 @@ make
 curl -X POST http://localhost:18080/ \
      -H "Content-Type: application/json" \
      -d '{
-           "id": "1222", 
+           "id": "1222",   
            "nested": {
-               "value": -1, "desc":"abc"
+               "value": -1
            }
          }'
 ```
