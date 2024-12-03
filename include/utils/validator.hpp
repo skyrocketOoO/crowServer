@@ -11,21 +11,36 @@
 #include <typeinfo>
 #include <stdexcept>
 
+enum class RuleType {
+    MaxLen,
+    RegExp,
+    Min,
+    Max,
+    In,
+    Eq,
+    NotEq,
+};
+
 struct FieldMeta {
-    std::string name;
-    std::vector<std::string> rules;
+  std::string name;
+  std::vector<RuleMeta> ruleMetas;
+};
+
+struct RuleMeta {
+  RuleType type;
+  std::any value;
 };
 
 namespace Rule {
   namespace String{
-    std::string MaxLen(int val);
-    std::string RegExp(const std::string);
-    std::string In(const std::vector<std::string>);
+    RuleMeta MaxLen(int val);
+    RuleMeta RegExp(const std::string);
+    RuleMeta In(const std::vector<std::string>);
   }
 
   namespace Number{
-    std::string Min(int val);
-    std::string Max(int val);
+    RuleMeta Min(int val);
+    RuleMeta Max(int val);
   }
 }
 

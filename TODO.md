@@ -1,5 +1,5 @@
-- Check valid rule on each type
-- mapping error to error code or message
+- Check valid rule on each type on compile time
+- mapping error to error code or message or exception
 - error can be wrappped
 - add BindAndValidate method
 - if metadata not provided, don't validate
