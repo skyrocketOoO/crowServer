@@ -46,11 +46,13 @@ struct is_optional<std::optional<T>> : std::true_type {};
 template <typename T>
 inline constexpr bool is_optional_v = is_optional<T>::value;
 
-
 template <typename T>
 std::string validate(T obj) {
     const auto view = rfl::to_view(obj);
     std::string err;
+    if constexpr (!has_metadata<T>::value) {
+      return "";
+    }
     std::array metadatas = obj.metadata();
   
     view.apply([&err, &metadatas](const auto& field) {
