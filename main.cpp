@@ -29,7 +29,6 @@ int main() {
                     }
                 } nested;
                 
-
                 auto metadata() {
                     return std::array{
                         FieldMeta("id", {}),
