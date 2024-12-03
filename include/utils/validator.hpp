@@ -32,10 +32,10 @@ struct RuleMeta {
 };
 
 namespace Rule {
+  RuleMeta In(const std::vector<std::any>);
   namespace String{
     RuleMeta MaxLen(int val);
     RuleMeta RegExp(const std::string);
-    RuleMeta In(const std::vector<std::string>);
   }
 
   namespace Number{

@@ -10,26 +10,25 @@ namespace Rule {
             };
         }
         RuleMeta RegExp(const std::string s){
-            return "regexp:" + s;
-        }
-        RuleMeta In(const std::vector<std::string> v){
-            std::string result = "in:[";
-            for(const auto& s : v){
-                result += s + ", ";
-            }
-            result.pop_back();
-            result.pop_back();
-            result += "]";
-            return result;
+            return RuleMeta{
+                type: RuleType::RegExp,
+                value: s,
+            };
         }
     }
 
     namespace Number{
-        std::string Min(int val){
-            return "min:" + std::to_string(val);
+        RuleMeta Min(int val){
+            return RuleMeta{
+                type: RuleType::Min,
+                value: val,
+            };
         }
-        std::string Max(int val){
-            return "max:" + std::to_string(val);
+        RuleMeta Max(int val){
+            return RuleMeta{
+                type: RuleType::Max,
+                value: val,
+            };
         }
     }
 }
