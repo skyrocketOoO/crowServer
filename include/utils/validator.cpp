@@ -12,9 +12,6 @@ namespace Rule {
                 return std::string{};
             };
         }
-        // std::string MaxLen(int val) {
-        //     return "maxLen:" + std::to_string(val);
-        // }
         // std::string RegExp(const std::string s){
         //     return "regexp:" + s;
         // }
