@@ -1,5 +1,4 @@
-#ifndef VALIDATOR_HPP
-#define VALIDATOR_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -128,4 +127,3 @@ std::string validate(T obj) {
 
     return err;
 }
-#endif // VALIDATOR_HPP
