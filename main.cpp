@@ -20,20 +20,22 @@ int main() {
                 std::optional<std::string> name;
 
                 struct Nested {
+                    std::string name;
                     int value;
 
-                    auto metadata() {
-                        return std::array{
-                            FieldMeta("value", {Rule::Number::Min(0)}),
+                    auto validateMetas() {
+                        return std::tuple{
+                            Field<int>{"value", {Rule::Number::Min(0), Rule::Number::Max(20)}},
+                            Field<std::string>{"name", {Rule::String::MaxLen(10)}},
                         };
                     }
                 } nested;
                 
-                // auto metadata() {
-                //     return std::array{
-                //         FieldMeta("name", {Rule::String::MaxLen(10)}),
-                //     };
-                // }
+                auto validateMetas() {
+                    return std::tuple{
+                        Field<std::string>{"name", {Rule::String::MaxLen(10)}},
+                    };
+                }
             };
             
             auto [result, err] = parseJsonToStruct<Request>(req.body);
