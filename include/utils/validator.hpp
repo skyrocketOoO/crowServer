@@ -26,12 +26,22 @@ struct Field {
     // TODO: Add static check to avoid the T is not fit the field type
 };
 
+// enum RuleType{
+//   StrMaxLen
+// }
+
+// template <typename T>
+// struct Rule {
+//   RuleType type;
+//   std::function<std::string(std::string,T)> validateFunc;
+// }
+
 
 namespace Rule {
   namespace String{
     using ret = std::function<std::string(std::string, std::string)>;
     ret MaxLen(int threshold);
-    // std::string RegExp(const std::string);
+    ret RegExp(std::string pattern);
     // std::string In(const std::vector<std::string>);
   }
 

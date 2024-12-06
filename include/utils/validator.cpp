@@ -12,9 +12,12 @@ namespace Rule {
                 return std::string{};
             };
         }
-        // std::string RegExp(const std::string s){
-        //     return "regexp:" + s;
-        // }
+        ret RegExp(const std::string pattern){
+            return [pattern](std::string fName, std::string fVal) {
+                
+                return std::string{};
+            };
+        }
         // std::string In(const std::vector<std::string> v){
         //     std::string result = "in:[";
         //     for(const auto& s : v){
