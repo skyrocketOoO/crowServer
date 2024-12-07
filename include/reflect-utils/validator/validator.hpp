@@ -29,27 +29,20 @@ struct Field {
 };
 
 template <typename T>
-struct is_user_defined : std::integral_constant<bool, !std::is_fundamental<T>::value && !std::is_enum<T>::value && !std::is_same<T, std::string>::value> {};
-
-// template <typename T, typename = void>
-// struct has_metadata : std::false_type {};
-
-// template <typename T>
-// struct has_metadata<T, std::void_t<decltype(std::declval<T>().validateMetas())>> : std::true_type {};
+concept isUserDefined = 
+    !std::is_fundamental_v<T> && 
+    !std::is_enum_v<T> && 
+    !std::is_same_v<T, std::string>;
 
 template <typename T>
-concept has_metadata = requires(T t) {
+concept hasValidateMeta = requires(T t) {
     { t.validateMetas() };
 };
 
-
-template <typename T>
-struct is_optional : std::false_type {};
-template <typename T>
-struct is_optional<std::optional<T>> : std::true_type {};
-// Helper variable for convenience (C++17)
-template <typename T>
-inline constexpr bool is_optional_v = is_optional<T>::value;
+// template <typename T>
+// concept isOptional = requires(T t){
+//   { std::optional<T>{t} } -> std::same_as<std::optional<T>>;
+// }
 
 template <typename Tuple, typename Func, std::size_t... Indices>
 void forEachInTuple(const Tuple& tuple, Func&& func, std::index_sequence<Indices...>) {
@@ -75,7 +68,7 @@ std::string validate(T obj) {
       auto& value = *field.value();
       std::any valueAny;
       using FieldType = std::decay_t<decltype(*field.value())>;
-      if constexpr (is_optional_v<FieldType>) { 
+      if constexpr (std::__is_optional_v<FieldType>) { 
         if (!value.has_value()) {
             return;
         }
@@ -86,14 +79,14 @@ std::string validate(T obj) {
 
       if constexpr (
         std::is_class_v<FieldType> && 
-        is_user_defined<FieldType>::value &&
-        has_metadata<FieldType>
+        isUserDefined<FieldType> &&
+        hasValidateMeta<FieldType>
       ) {
         err = validate(value);
         return; 
       }
 
-      if constexpr (!has_metadata<T>) {
+      if constexpr (!hasValidateMeta<T>) {
         return;
       }
 

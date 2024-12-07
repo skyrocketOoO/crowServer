@@ -27,7 +27,7 @@ struct Request {
     
     auto validateMetas() {
         return std::tuple{
-            Field<std::string>{"name", {Rule::Common::NotWritable<std::string>()}},
+            // Field<std::string>{"name", {Rule::Common::NotWritable<std::string>()}},
             Field<std::string>{"id", {Rule::String::MaxLen(10)}}
         };
     }
