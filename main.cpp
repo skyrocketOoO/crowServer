@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 #include <type_traits>
-#include <utils/parser.hpp>
-#include <utils/validator.hpp>
+#include "reflect-utils/parser/parser.hpp"
+#include "reflect-utils/validator/validator.hpp"
 #include "rfl.hpp"
 
 struct Request {
@@ -14,7 +14,20 @@ struct Request {
     struct Nested {
         std::string name;
         int value;
+
+        auto validateMetas() {
+            return std::tuple{
+                Field<int>{"value", {Rule::Number::Min(0), Rule::Number::Max(20)}},
+                Field<std::string>{"name", {Rule::String::MaxLen(10)}},
+            };
+        }
     } nested;
+    
+    auto validateMetas() {
+        return std::tuple{
+            Field<std::string>{"name", {Rule::String::MaxLen(10)}},
+        };
+    }
 };
 
 int main() {
@@ -80,6 +93,20 @@ int main() {
     //     std::cout << "Incorrect nested type error: \n" << err5 << std::endl << std::endl;
     // }
 
+    // Test case 7: invalid JSON
+    std::string invalidJson = R"({
+        awefwafwafwafawafw
+    })";
+    auto [result7, err7] = parseJsonToStruct<Request>(invalidJson);
+    if (err7.size() != 0) {
+        for (auto e : err7){
+            std::visit([](const auto& err) {
+                std::cout << static_cast<int>(err.type) << std::endl;
+            }, e);
+        }
+        std::cout << std::endl;
+    }
+
     // Test case 6: Valid JSON
     std::string validJson = R"({
         "id": "12345",
@@ -92,19 +119,6 @@ int main() {
     auto [result6, err6] = parseJsonToStruct<Request>(validJson);
     if (err6.size() != 0) {
         for (auto e : err6){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
-        }
-        std::cout << std::endl;
-    }
-    // Test case 7: invalid JSON
-    std::string invalidJson = R"({
-        awefwafwafwafawafw
-    })";
-    auto [result7, err7] = parseJsonToStruct<Request>(invalidJson);
-    if (err7.size() != 0) {
-        for (auto e : err7){
             std::visit([](const auto& err) {
                 std::cout << static_cast<int>(err.type) << std::endl;
             }, e);

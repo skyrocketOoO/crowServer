@@ -9,6 +9,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <stdexcept>
+#include "rule.hpp"
 
 template <typename T>
 struct Field {
@@ -25,32 +26,6 @@ struct Field {
 
     // TODO: Add static check to avoid the T is not fit the field type
 };
-
-// enum RuleType{
-//   StrMaxLen
-// }
-
-// template <typename T>
-// struct Rule {
-//   RuleType type;
-//   std::function<std::string(std::string,T)> validateFunc;
-// }
-
-
-namespace Rule {
-  namespace String{
-    using ret = std::function<std::string(std::string, std::string)>;
-    ret MaxLen(int threshold);
-    ret RegExp(std::string pattern);
-    // std::string In(const std::vector<std::string>);
-  }
-
-  namespace Number{
-    using ret = std::function<std::string(std::string, int)>;
-    ret Min(int threshold);
-    ret Max(int threshold);
-  }
-}
 
 template <typename T>
 struct is_user_defined : std::integral_constant<bool, !std::is_fundamental<T>::value && !std::is_enum<T>::value && !std::is_same<T, std::string>::value> {};
