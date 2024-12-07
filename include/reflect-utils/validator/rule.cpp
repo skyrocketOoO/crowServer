@@ -3,19 +3,6 @@
 
 namespace Rule {
     namespace Common {
-        template <typename T>
-        std::function<std::string(std::string, T)> In(std::vector<T> values){
-            return [values](std::string fName, T fVal) {
-                for (auto v : values){
-                    if (v == fVal){
-                        return std::string{};
-                    }
-                }
-                return "Field '" + fName + "' must be one of: " + std::accumulate(values.begin(), values.end(), std::string{}, [](std::string a, T v) {
-                    return a + ", " + std::to_string(v);
-                });
-            };
-        }
 
         template <typename T>
         std::function<std::string(std::string, T)> And(std::vector<std::function<std::string(std::string, T)>> validateFuncs){

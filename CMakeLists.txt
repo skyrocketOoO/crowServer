@@ -7,7 +7,6 @@ set(YYJSON_DISABLE_NON_STANDARD ON CACHE INTERNAL "")
 
 # Include Crow and Asio
 include_directories(
-  asio/include 
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/reflect-cpp/include

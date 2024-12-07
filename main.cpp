@@ -5,6 +5,7 @@
 #include <type_traits>
 #include "reflect-utils/parser/parser.hpp"
 #include "reflect-utils/validator/validator.hpp"
+#include "reflect-utils/validator/rule.hpp"
 #include "rfl.hpp"
 
 struct Request {
@@ -18,7 +19,7 @@ struct Request {
         auto validateMetas() {
             return std::tuple{
                 Field<int>{"value", {Rule::Number::Min(0), Rule::Number::Max(20)}},
-                Field<std::string>{"name", {Rule::String::MaxLen(10)}},
+                Field<std::string>{"name", {Rule::Common::In<std::string>({"a", "b"})}},
             };
         }
     } nested;
@@ -74,25 +75,6 @@ int main() {
         std::cout << std::endl;
     }
 
-    // Test case 4: Missing nested object "nested"
-    // std::string missingNested = R"({
-    //     "id": "12345",
-    //     "name": "Sample Name"
-    // })";
-    // auto [result4, err4] = parseJsonToStruct<Request>(missingNested);
-    // if (err4 != "") {
-    //     std::cout << "Missing nested object error: \n" << err4 << std::endl << std::endl;
-    // }
-
-    // Test case 5: Incorrect type in nested object
-    // std::string incorrectNestedType = R"({
-    //     "nested": "nested"
-    // })";
-    // auto [result5, err5] = parseJsonToStruct<Request>(incorrectNestedType);
-    // if (err5 != "") {
-    //     std::cout << "Incorrect nested type error: \n" << err5 << std::endl << std::endl;
-    // }
-
     // Test case 7: invalid JSON
     std::string invalidJson = R"({
         awefwafwafwafawafw
@@ -126,6 +108,10 @@ int main() {
         std::cout << std::endl;
     }
 
+    auto err = validate(result6);
+    if (err != ""){
+        std::cout << "Validation failed: " << err << std::endl;
+    }
 
     return 0;
 }
