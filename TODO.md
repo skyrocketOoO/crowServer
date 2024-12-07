@@ -7,6 +7,7 @@
 - add naming conversion strategy or customize parse method
 - refactor the file , not in one file
 - Generate Request struct based on api specification
+- add anyOf condition
 
 20241205
 - Integrated with current OT codebase
