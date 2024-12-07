@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <stdexcept>
 #include "rule.hpp"
+#include <concepts>
 
 template <typename T>
 struct Field {
@@ -30,11 +31,17 @@ struct Field {
 template <typename T>
 struct is_user_defined : std::integral_constant<bool, !std::is_fundamental<T>::value && !std::is_enum<T>::value && !std::is_same<T, std::string>::value> {};
 
-template <typename T, typename = void>
-struct has_metadata : std::false_type {};
+// template <typename T, typename = void>
+// struct has_metadata : std::false_type {};
+
+// template <typename T>
+// struct has_metadata<T, std::void_t<decltype(std::declval<T>().validateMetas())>> : std::true_type {};
 
 template <typename T>
-struct has_metadata<T, std::void_t<decltype(std::declval<T>().validateMetas())>> : std::true_type {};
+concept has_metadata = requires(T t) {
+    { t.validateMetas() };
+};
+
 
 template <typename T>
 struct is_optional : std::false_type {};
@@ -80,34 +87,35 @@ std::string validate(T obj) {
       if constexpr (
         std::is_class_v<FieldType> && 
         is_user_defined<FieldType>::value &&
-        has_metadata<FieldType>::value
+        has_metadata<FieldType>
       ) {
         err = validate(value);
         return; 
       }
 
-      using objType = std::decay_t<decltype(obj)>;
-      if constexpr (has_metadata<objType>::value) {
-        auto validateMetas = obj.validateMetas();
-        forEachInTuple(validateMetas, [&err, &field, &valueAny](const auto& metadata) {
-          // std::cout << field.name() << " : " << metadata.name << std::endl;
-          if (metadata.name != field.name()) {
+      if constexpr (!has_metadata<T>) {
+        return;
+      }
+
+      auto validateMetas = obj.validateMetas();
+      forEachInTuple(validateMetas, [&err, &field, &valueAny](const auto& metadata) {
+        // std::cout << field.name() << " : " << metadata.name << std::endl;
+        if (metadata.name != field.name()) {
+            return;
+        }
+
+        for (const auto validateFunc : metadata.validateFuncs) {
+          try {
+              err = validateFunc(metadata.name, metadata.castAny(valueAny));
+              if (err != ""){
+                return;
+              }
+          } catch (const std::exception& e) {
+              err = e.what();
               return;
           }
-
-          for (const auto validateFunc : metadata.validateFuncs) {
-            try {
-                err = validateFunc(metadata.name, metadata.castAny(valueAny));
-                if (err != ""){
-                  return;
-                }
-            } catch (const std::exception& e) {
-                err = e.what();
-                return;
-            }
-          }
-        });
-      }
+        }
+      });
     });
 
     return err;
