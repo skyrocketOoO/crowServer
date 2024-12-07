@@ -66,6 +66,23 @@ namespace Rule {
     using ret = std::function<std::string(std::string, int)>;
     ret Min(int threshold);
     ret Max(int threshold);
+    inline ret Gt(int value){
+      return [value](std::string fName, int fVal) {
+          if (fVal <= value){
+              return "Field '" + fName + "' is smaller and equal than " + std::to_string(value);
+          };
+          return std::string{};
+      };
+    }
+
+    inline ret Lt(int value){
+      return [value](std::string fName, int fVal) {
+          if (fVal >= value){
+              return "Field '" + fName + "' is bigger and equal than " + std::to_string(value);
+          };
+          return std::string{};
+      };
+    }
   }
 }
 

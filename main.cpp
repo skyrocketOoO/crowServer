@@ -1,4 +1,3 @@
-#include "crow_all.h"
 #include <json.hpp>
 #include <string>
 #include <iostream>
@@ -26,7 +25,7 @@ struct Request {
     
     auto validateMetas() {
         return std::tuple{
-            Field<std::string>{"name", {Rule::String::MaxLen(10)}},
+            Field<std::string>{"name", {Rule::Common::NotWritable<std::string>()}},
         };
     }
 };
