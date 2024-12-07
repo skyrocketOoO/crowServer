@@ -19,27 +19,6 @@ namespace Rule {
         }
 
         template <typename T>
-        std::function<std::string(std::string, T)> Or(std::vector<std::function<std::string(std::string, T)>> validateFuncs){
-            return [validateFuncs](std::string fName, T fVal) {
-                std::string errorMsg;
-                bool oneSuccess = false;
-                for (auto validateFunc : validateFuncs) {
-                    std::string error = validateFunc(fName, fVal);
-                    if (!error.empty()) {
-                        errorMsg += error + "\n";
-                    }else{
-                        oneSuccess = true;
-                        break;
-                    }
-                }
-                if (oneSuccess){
-                    return std::string{};
-                }
-                return errorMsg;
-            };
-        }
-
-        template <typename T>
         std::function<std::string(std::string, T)> Eq(T value){
             return [value](std::string fName, T fVal) {
                 if (fVal != value){
@@ -56,13 +35,6 @@ namespace Rule {
                     return "Field '" + fName + "' value is equal to " + std::to_string(value);
                 };
                 return std::string{};
-            };
-        }
-
-        template <typename T>
-        std::function<std::string(std::string, T)> NotWritable(){
-            return [](std::string fName, T fVal) {
-                return "Field '" + fName + "' is not writable";
             };
         }
     }

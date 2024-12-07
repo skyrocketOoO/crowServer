@@ -45,8 +45,29 @@ namespace Rule {
     std::function<std::string(std::string, T)> And(std::vector<std::function<std::string(std::string, T)>> validateFuncs);
 
     template <typename T>
-    std::function<std::string(std::string, T)> Or(std::vector<std::function<std::string(std::string, T)>> validateFuncs);
-  
+    std::function<std::string(std::string, T)> Or(std::vector<std::function<std::string(std::string, T)>> validateFuncs){
+        return [validateFuncs](std::string fName, T fVal) {
+            std::string errorMsg;
+            bool oneSuccess = false;
+            for (auto validateFunc : validateFuncs) {
+                std::string error = validateFunc(fName, fVal);
+                if (!error.empty()) {
+                    if (!errorMsg.empty()){
+                      errorMsg += "OR\n";
+                    }
+                    errorMsg += error + "\n";
+                }else{
+                    oneSuccess = true;
+                    break;
+                }
+            }
+            if (oneSuccess){
+                return std::string{};
+            }
+            return errorMsg;
+        };
+    }
+
     template <typename T>
     std::function<std::string(std::string, T)> Eq(T value);
   
@@ -54,7 +75,11 @@ namespace Rule {
     std::function<std::string(std::string, T)> Ne(T value);
 
     template <typename T>
-    std::function<std::string(std::string, T)> NotWritable();
+    std::function<std::string(std::string, T)> NotWritable(){
+        return [](std::string fName, T fVal) {
+            return "Field '" + fName + "' is not writable";
+        };
+    }
   }
   namespace String{
     using ret = std::function<std::string(std::string, std::string)>;

@@ -58,7 +58,7 @@ template <typename T>
 std::string validate(T obj) {
     const auto view = rfl::to_view(obj);
     std::string err;
-  
+
     view.apply([&err, &obj](const auto& field) {
       if (err != ""){
         return;
@@ -77,7 +77,6 @@ std::string validate(T obj) {
         valueAny = value;
       }
 
-      // check nested
       if constexpr (
         std::is_class_v<FieldType> && 
         is_user_defined<FieldType>::value &&
@@ -91,6 +90,7 @@ std::string validate(T obj) {
       if constexpr (has_metadata<objType>::value) {
         auto validateMetas = obj.validateMetas();
         forEachInTuple(validateMetas, [&err, &field, &valueAny](const auto& metadata) {
+          // std::cout << field.name() << " : " << metadata.name << std::endl;
           if (metadata.name != field.name()) {
               return;
           }

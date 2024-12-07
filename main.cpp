@@ -17,7 +17,9 @@ struct Request {
 
         auto validateMetas() {
             return std::tuple{
-                Field<int>{"value", {Rule::Number::Min(0), Rule::Number::Max(20)}},
+                Field<int>{"value", {
+                    Rule::Common::Or<int>({Rule::Number::Gt(10), Rule::Number::Lt(0)})
+                }},
                 Field<std::string>{"name", {Rule::Common::In<std::string>({"a", "b"})}},
             };
         }
@@ -26,6 +28,7 @@ struct Request {
     auto validateMetas() {
         return std::tuple{
             Field<std::string>{"name", {Rule::Common::NotWritable<std::string>()}},
+            Field<std::string>{"id", {Rule::String::MaxLen(10)}}
         };
     }
 };
@@ -93,24 +96,27 @@ int main() {
         "id": "12345",
         "name": "Sample Name",
         "nested": {
-            "name": "Nested Name",
-            "value": 42
+            "name": "a",
+            "value": 7
         }
     })";
     auto [result6, err6] = parseJsonToStruct<Request>(validJson);
     if (err6.size() != 0) {
+        std::cout << "correct case fail" << std::endl;
         for (auto e : err6){
             std::visit([](const auto& err) {
                 std::cout << static_cast<int>(err.type) << std::endl;
             }, e);
         }
         std::cout << std::endl;
+        return 1;
     }
-
-    auto err = validate(result6);
+    // std::cout << has_metadata<std::decay_t<decltype(*result6)>>::value << std::endl;
+    auto err = validate(*result6);
     if (err != ""){
         std::cout << "Validation failed: " << err << std::endl;
     }
+
 
     return 0;
 }
