@@ -19,7 +19,7 @@ namespace Rule {
     std::function<std::string(std::string, T)> Ne(T value);
 
     template <typename T>
-    std::function<std::string(std::string, T)> NotWritable(T value);
+    std::function<std::string(std::string, T)> NotWritable();
   }
   namespace String{
     using ret = std::function<std::string(std::string, std::string)>;
