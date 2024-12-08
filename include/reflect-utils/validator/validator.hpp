@@ -11,22 +11,8 @@
 #include <stdexcept>
 #include "rule.hpp"
 #include <concepts>
-
-template <typename T>
-struct Field {
-    std::string name;
-    std::vector<std::function<std::string(std::string,T)>> validateFuncs;
-
-    T castAny(const std::any& value) const {
-        try {
-            return std::any_cast<T>(value);
-        } catch (const std::bad_any_cast&) {
-            throw std::runtime_error("Type mismatch: failed to cast std::any to the required type.");
-        }
-    }
-
-    // TODO: Add static check to avoid the T is not fit the field type
-};
+#include "tuple.hpp"
+#include "Field.hpp"
 
 template <typename T>
 concept isUserDefined = 
@@ -39,20 +25,8 @@ concept hasValidateMeta = requires(T t) {
     { t.validateMetas() };
 };
 
-// template <typename T>
-// concept isOptional = requires(T t){
-//   { std::optional<T>{t} } -> std::same_as<std::optional<T>>;
-// }
-
-template <typename Tuple, typename Func, std::size_t... Indices>
-void forEachInTuple(const Tuple& tuple, Func&& func, std::index_sequence<Indices...>) {
-    (func(std::get<Indices>(tuple)), ...);
-}
-
-template <typename Tuple, typename Func>
-void forEachInTuple(const Tuple& tuple, Func&& func) {
-    forEachInTuple(tuple, std::forward<Func>(func), std::make_index_sequence<std::tuple_size_v<Tuple>>{});
-}
+template <typename T>
+concept IsNestedStruct = std::is_class_v<T> && isUserDefined<T> && hasValidateMeta<T>;     
 
 template <typename T>
 std::string validate(T obj) {
@@ -66,22 +40,16 @@ std::string validate(T obj) {
       
       // check and unwrapped std::optional
       auto& value = *field.value();
-      std::any valueAny;
+      std::any valueAny = value;
       using FieldType = std::decay_t<decltype(*field.value())>;
       if constexpr (std::__is_optional_v<FieldType>) { 
         if (!value.has_value()) {
             return;
         }
         valueAny = value.value();
-      }else{
-        valueAny = value;
       }
 
-      if constexpr (
-        std::is_class_v<FieldType> && 
-        isUserDefined<FieldType> &&
-        hasValidateMeta<FieldType>
-      ) {
+      if constexpr (IsNestedStruct<FieldType>) {
         err = validate(value);
         return; 
       }
