@@ -5,7 +5,7 @@
 #include <functional>
 #include <numeric>
 #include <vector>  
-#include <sstream> // For std::ostringstream
+#include <sstream>
 #include <type_traits> 
 
 namespace Rule {
