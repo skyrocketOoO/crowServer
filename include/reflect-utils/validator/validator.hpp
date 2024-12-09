@@ -34,10 +34,6 @@ std::string validate(T obj) {
     std::string err;
 
     view.apply([&err, &obj](const auto& field) {
-      if (err != ""){
-        return;
-      }
-      
       // check and unwrapped std::optional
       auto& value = *field.value();
       std::any valueAny = value;
