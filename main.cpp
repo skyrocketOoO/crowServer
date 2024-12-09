@@ -42,9 +42,7 @@ int main() {
     auto [result1, err1] = parseJsonToStruct<Request>(missingField);
     if (err1.size() != 0) {
         for (auto e : err1){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
+            std::cout << e << std::endl;
         }
         std::cout << std::endl;
     }
@@ -56,9 +54,7 @@ int main() {
     auto [result2, err2] = parseJsonToStruct<Request>(incorrectType);
     if (err2.size() != 0) {
         for (auto e : err2){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
+            std::cout << e << std::endl;
         }
         std::cout << std::endl;
     }
@@ -70,9 +66,7 @@ int main() {
     auto [result3, err3] = parseJsonToStruct<Request>(unexpectedField);
     if (err3.size() != 0) {
         for (auto e : err3){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
+            std::cout << e << std::endl;
         }
         std::cout << std::endl;
     }
@@ -84,9 +78,7 @@ int main() {
     auto [result7, err7] = parseJsonToStruct<Request>(invalidJson);
     if (err7.size() != 0) {
         for (auto e : err7){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
+            std::cout << e << std::endl;
         }
         std::cout << std::endl;
     }
@@ -103,9 +95,7 @@ int main() {
     if (err6.size() != 0) {
         std::cout << "correct case fail" << std::endl;
         for (auto e : err6){
-            std::visit([](const auto& err) {
-                std::cout << static_cast<int>(err.type) << std::endl;
-            }, e);
+            std::cout << e << std::endl;
         }
         std::cout << std::endl;
         return 1;

@@ -1,7 +1,8 @@
 #include <string>
 #include <variant>
 #include <regex>
-
+#include "rfl.hpp"
+#include "rfl/json.hpp"
 
 enum class ErrorType {
     MissingField,
@@ -40,9 +41,7 @@ struct ErrorUnknown {
 using Error = std::variant<ErrorMissingField, ErrorIncorrectType, ErrorUnknownField, ErrorInvalidJson, ErrorUnknown>;
 
 // Function to map error messages to error structs
-Error mapErrors(const std::string& errorMessage) {
-    std::vector<Error> errors;
-
+std::string mapErrors(const std::string& errorMessage) {
     // Regex patterns for different error types
     std::regex missingFieldRegex(R"(Field named '(\w+)' not found\.)");
     std::regex incorrectTypeRegex(R"(Failed to parse field '(\w+)': Could not cast to (\w+)\.)");
@@ -51,17 +50,18 @@ Error mapErrors(const std::string& errorMessage) {
 
     std::smatch match;
 
+    Error err;
     if (std::regex_search(errorMessage, match, missingFieldRegex)) {
-        return ErrorMissingField{ErrorType::MissingField, match[1]};
+        err = ErrorMissingField{ErrorType::MissingField, match[1]};
     } else if (std::regex_search(errorMessage, match, incorrectTypeRegex)) {
-        return ErrorIncorrectType{ErrorType::IncorrectType, match[1], match[2], "string"}; // Assuming "string" as target type
+        err = ErrorIncorrectType{ErrorType::IncorrectType, match[1], match[2], "string"}; // Assuming "string" as target type
     } else if (std::regex_search(errorMessage, match, unknownFieldRegex)) {
-        return ErrorUnknownField{ErrorType::UnknownField, match[1]};
+        err = ErrorUnknownField{ErrorType::UnknownField, match[1]};
     } else if (std::regex_search(errorMessage, invalidJsonRegex)) {
-        return ErrorInvalidJson{ErrorType::InvalidJson};
+        err = ErrorInvalidJson{ErrorType::InvalidJson};
     } else {
-        return ErrorUnknown{ErrorType::UnknownError, errorMessage};
+        err = ErrorUnknown{ErrorType::UnknownError, errorMessage};
     }
 
-    return ErrorUnknown{ErrorType::UnknownError, errorMessage};  // Return default error if no pattern matches
+    return rfl::json::write(err);
 }

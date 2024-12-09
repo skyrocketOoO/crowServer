@@ -22,14 +22,14 @@ std::vector<std::string> splitErrors(const std::string& errorMessage) {
 }
 
 template <typename T>
-std::pair<T*, std::vector<Error>> parseJsonToStruct(const std::string& jsonStr) {
+std::pair<T*, std::vector<std::string>> parseJsonToStruct(const std::string& jsonStr) {
     try {
         auto parsedResult = rfl::json::read<T, rfl::NoExtraFields>(jsonStr);
         return {new T(parsedResult.value()), {}};  // Return a new object on success
     } catch (const std::exception& e) {
         std::string errMsg = e.what();
         auto errStrs = splitErrors(errMsg);
-        std::vector<Error> errs;
+        std::vector<std::string> errs;
         for (auto errStr : errStrs){
             // std::cout << err << std::endl;
             auto errSt = mapErrors(errStr);
