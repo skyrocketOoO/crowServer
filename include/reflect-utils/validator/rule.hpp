@@ -9,6 +9,7 @@
 #include <type_traits> 
 #include "error.hpp"
 
+
 namespace Rule {
   namespace Common {
     template <typename T>
@@ -43,37 +44,54 @@ namespace Rule {
     template <typename T>
     std::function<std::string(std::string, T)> And(std::vector<std::function<std::string(std::string, T)>> validateFuncs){
         return [validateFuncs](std::string fName, T fVal) {
-            std::string errorMsg;
+            std::vector<std::string> errs;
             for (auto validateFunc : validateFuncs) {
-                std::string error = validateFunc(fName, fVal);
-                if (!error.empty()) {
-                    errorMsg += error + "\n";
+                std::string err = validateFunc(fName, fVal);
+                if (!err.empty()) {
+                    errs.push_back(err);
                 }
             }
-            return errorMsg;
+            if (errs.size() == 0){
+                return std::string{}; 
+            }
+
+            std::vector<nlohmann::json> deserializedErrs;
+            for (const auto& errStr : errs) {
+                deserializedErrs.push_back(nlohmann::json::parse(errStr));
+            }
+
+            nlohmann::json errorJson = {
+                {"type", "And"},
+                {"errors", deserializedErrs}
+            };
+            return errorJson.dump();
         };
     }
+    
     template <typename T>
     std::function<std::string(std::string, T)> Or(std::vector<std::function<std::string(std::string, T)>> validateFuncs){
         return [validateFuncs](std::string fName, T fVal) {
-            std::string errorMsg;
-            bool oneSuccess = false;
+            std::vector<std::string> errs;
             for (auto validateFunc : validateFuncs) {
-                std::string error = validateFunc(fName, fVal);
-                if (!error.empty()) {
-                    if (!errorMsg.empty()){
-                      errorMsg += "OR\n";
-                    }
-                    errorMsg += error + "\n";
-                }else{
-                    oneSuccess = true;
-                    break;
+                std::string err = validateFunc(fName, fVal);
+                if (!err.empty()) {
+                    errs.push_back(err);
                 }
             }
-            if (oneSuccess){
-                return std::string{};
+            if (errs.size() == 0){
+                return std::string{}; 
             }
-            return errorMsg;
+
+            std::vector<nlohmann::json> deserializedErrs;
+            for (const auto& errStr : errs) {
+                deserializedErrs.push_back(nlohmann::json::parse(errStr));
+            }
+
+            nlohmann::json errorJson = {
+                {"type", "Or"},
+                {"errors", deserializedErrs}
+            };
+            return errorJson.dump();
         };
     }
 
@@ -81,7 +99,12 @@ namespace Rule {
     std::function<std::string(std::string, T)> Eq(T value){
         return [value](std::string fName, T fVal) {
             if (fVal != value){
-                return "Field '" + fName + "' value is not equal to " + std::to_string(value);
+                return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Eq,
+                    fName,
+                    fVal,
+                    value,
+                });
             };
             return std::string{};
         };
@@ -91,7 +114,12 @@ namespace Rule {
     std::function<std::string(std::string, T)> Ne(T value){
         return [value](std::string fName, T fVal) {
             if (fVal == value){
-                return "Field '" + fName + "' value is equal to " + std::to_string(value);
+                return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Ne,
+                    fName,
+                    fVal,
+                    value,
+                });
             };
             return std::string{};
         };
@@ -100,7 +128,14 @@ namespace Rule {
     template <typename T>
     std::function<std::string(std::string, T)> NotWritable(){
         return [](std::string fName, T fVal) {
-            return "Field '" + fName + "' is not writable";
+            struct Error {
+                Validator::ErrorType type;               
+                std::string fieldName;
+            };
+            return rfl::json::write(Error{
+                Validator::ErrorType::NotWritable,
+                fName,
+            });
         };
     }
   }
@@ -109,7 +144,18 @@ namespace Rule {
     ret MaxLen(int threshold) {
         return [threshold](std::string fName, std::string fVal) {
             if (fVal.size() > threshold){
-                return "Field '" + fName + "' size is longer than " + std::to_string(threshold);
+                struct Error {
+                    Validator::ErrorType type;               
+                    std::string fieldName;
+                    std::string value;                       
+                    int compareVal;
+                };
+                return rfl::json::write(Error{
+                    Validator::ErrorType::NotWritable,
+                    fName,
+                    fVal,
+                    threshold,
+                });
             };
             return std::string{};
         };
@@ -127,15 +173,25 @@ namespace Rule {
     ret Min(int threshold) {
         return [threshold](std::string fName, int fVal) {
             if (fVal < threshold){
-                return "Field '" + fName + "' is smaller than " + std::to_string(threshold);
-            };
+                return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Min,
+                    fName,
+                    fVal,
+                    threshold,
+                });
+            }
             return std::string{};
         };
     }
     ret Max(int threshold) {
         return [threshold](std::string fName, int fVal) {
             if (fVal > threshold){
-                return "Field '" + fName + "' is bigger than " + std::to_string(threshold);
+                return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Max,
+                    fName,
+                    fVal,
+                    threshold,
+                });
             };
             return std::string{};
         };
@@ -143,8 +199,13 @@ namespace Rule {
     inline ret Gt(int value){
       return [value](std::string fName, int fVal) {
           if (fVal <= value){
-              return "Field '" + fName + "' is smaller and equal than " + std::to_string(value);
-          };
+              return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Gt,
+                    fName,
+                    fVal,
+                    value,
+                });
+          } 
           return std::string{};
       };
     }
@@ -152,8 +213,13 @@ namespace Rule {
     inline ret Lt(int value){
       return [value](std::string fName, int fVal) {
           if (fVal >= value){
-              return "Field '" + fName + "' is bigger and equal than " + std::to_string(value);
-          };
+              return rfl::json::write(Validator::Error<int>{
+                    Validator::ErrorType::Lt,
+                    fName,
+                    fVal,
+                    value,
+                });
+          }
           return std::string{};
       };
     }

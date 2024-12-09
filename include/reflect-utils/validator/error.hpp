@@ -9,6 +9,8 @@ enum class ErrorType {
   Eq,
   Ne,
   NotWritable,
+  And,
+  Or,
 
   // string
   MaxLen,
