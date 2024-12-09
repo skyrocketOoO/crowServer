@@ -94,7 +94,6 @@ int main() {
     // Test case 6: Valid JSON
     std::string validJson = R"({
         "id": "12345",
-        "name": "Sample Name",
         "nested": {
             "name": "a",
             "value": 7

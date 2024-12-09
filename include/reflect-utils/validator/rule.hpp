@@ -7,6 +7,7 @@
 #include <vector>  
 #include <sstream>
 #include <type_traits> 
+#include "error.hpp"
 
 namespace Rule {
   namespace Common {
@@ -24,19 +25,17 @@ namespace Rule {
                     return std::to_string(val);
                 } else {
                     std::ostringstream oss;
-                    oss << val; // Works for std::string and types with operator<<
+                    oss << val;
                     return oss.str();
                 }
             };
 
-            return "Field '" + fName + "' must be one of: " +
-                std::accumulate(values.begin(), values.end(), std::string{},
-                                [&toString](std::string a, const T& v) {
-                                    if (!a.empty()) {
-                                        return a + ", " + toString(v);
-                                    }
-                                    return toString(v);
-                                });
+            return rfl::json::write(Validator::Error<T>{
+                Validator::ErrorType::In,
+                fName,
+                fVal,
+                values
+            });
         };
     }
 
@@ -115,12 +114,12 @@ namespace Rule {
             return std::string{};
         };
     }
-    ret RegExp(const std::string pattern){
-        return [pattern](std::string fName, std::string fVal) {
+    // ret RegExp(const std::string pattern){
+    //     return [pattern](std::string fName, std::string fVal) {
             
-            return std::string{};
-        };
-    }
+    //         return std::string{};
+    //     };
+    // }
   }
 
   namespace Number{
