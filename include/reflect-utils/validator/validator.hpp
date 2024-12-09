@@ -43,8 +43,7 @@ std::string validate(T obj) {
             return;
         }
         auto& innerValue = value.value();
-        if constexpr (IsNestedStruct<std::decay_t<decltype(innerValue)>>)
-        {
+        if constexpr (IsNestedStruct<std::decay_t<decltype(innerValue)>>){
             err = validate(innerValue);
             return;
         }
