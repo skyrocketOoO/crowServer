@@ -82,6 +82,7 @@
     "charconv": "cpp",
     "cfenv": "cpp",
     "*.inc": "cpp",
-    "regex": "cpp"
+    "regex": "cpp",
+    "span": "cpp"
   }
 }

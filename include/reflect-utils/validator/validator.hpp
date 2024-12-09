@@ -37,12 +37,18 @@ std::string validate(T obj) {
       // check and unwrapped std::optional
       auto& value = *field.value();
       std::any valueAny = value;
-      using FieldType = std::decay_t<decltype(*field.value())>;
+      using FieldType = std::decay_t<decltype(value)>;
       if constexpr (std::__is_optional_v<FieldType>) { 
         if (!value.has_value()) {
             return;
         }
-        valueAny = value.value();
+        auto& innerValue = value.value();
+        if constexpr (IsNestedStruct<std::decay_t<decltype(innerValue)>>)
+        {
+            err = validate(innerValue);
+            return;
+        }
+        valueAny = innerValue;
       }
 
       if constexpr (IsNestedStruct<FieldType>) {
