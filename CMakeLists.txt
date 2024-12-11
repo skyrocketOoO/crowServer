@@ -6,12 +6,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(YYJSON_DISABLE_NON_STANDARD ON CACHE INTERNAL "")
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-# Include Crow and Asio
+
 include_directories(
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/reflect-cpp/include
 )
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+include(GoogleTest)
+
 
 add_subdirectory(yyjson)
 add_subdirectory(reflect-cpp) 
@@ -29,5 +43,6 @@ set(
   src/reflectcpp_json.cpp
 )
 
-add_executable(app main.cpp)
-target_link_libraries(app PRIVATE yyjson reflect-cpp nlohmann_json::nlohmann_json)
+add_executable(app main.cpp tests/validator_test.cpp)
+target_link_libraries(app PRIVATE yyjson reflect-cpp nlohmann_json::nlohmann_json GTest::gtest_main)
+

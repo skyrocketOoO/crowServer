@@ -4,6 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/usr/include",
+                "${workspaceFolder}/build/_deps/googletest-src/googletest/include",
+                "/usr/local/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc", // Use GCC 10 or Clang (if using Clang, change this path)

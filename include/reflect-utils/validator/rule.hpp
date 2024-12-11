@@ -8,6 +8,7 @@
 #include <sstream>
 #include <type_traits> 
 #include "error.hpp"
+#include <json.hpp>
 
 
 namespace Rule {
