@@ -73,13 +73,17 @@ namespace Rule {
     std::function<std::string(std::string, T)> Or(std::vector<std::function<std::string(std::string, T)>> validateFuncs){
         return [validateFuncs](std::string fName, T fVal) {
             std::vector<std::string> errs;
+            bool anyTrue;
             for (auto validateFunc : validateFuncs) {
                 std::string err = validateFunc(fName, fVal);
                 if (!err.empty()) {
                     errs.push_back(err);
+                }else{
+                    anyTrue = true;
+                    break;
                 }
             }
-            if (errs.size() == 0){
+            if (anyTrue){
                 return std::string{}; 
             }
 

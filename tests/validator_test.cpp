@@ -40,9 +40,6 @@ TEST(JsonParsingTests, MissingRequiredField) {
     })";
     auto [result, err] = parseJsonToStruct<Request>(missingField);
     ASSERT_FALSE(err.empty());
-    for (const auto& e : err) {
-        std::cout << e << std::endl;
-    }
 }
 
 TEST(JsonParsingTests, IncorrectType) {
@@ -51,9 +48,6 @@ TEST(JsonParsingTests, IncorrectType) {
     })";
     auto [result, err] = parseJsonToStruct<Request>(incorrectType);
     ASSERT_FALSE(err.empty());
-    for (const auto& e : err) {
-        std::cout << e << std::endl;
-    }
 }
 
 TEST(JsonParsingTests, UnexpectedField) {
@@ -62,9 +56,6 @@ TEST(JsonParsingTests, UnexpectedField) {
     })";
     auto [result, err] = parseJsonToStruct<Request>(unexpectedField);
     ASSERT_FALSE(err.empty());
-    for (const auto& e : err) {
-        std::cout << e << std::endl;
-    }
 }
 
 TEST(JsonParsingTests, InvalidJson) {
@@ -73,9 +64,6 @@ TEST(JsonParsingTests, InvalidJson) {
     })";
     auto [result, err] = parseJsonToStruct<Request>(invalidJson);
     ASSERT_FALSE(err.empty());
-    for (const auto& e : err) {
-        std::cout << e << std::endl;
-    }
 }
 
 TEST(JsonParsingTests, ValidJson) {
@@ -83,16 +71,11 @@ TEST(JsonParsingTests, ValidJson) {
         "id": "12345",
         "nested": {
             "name": "a",
-            "value": 7
+            "value": 11
         }
     })";
     auto [result, err] = parseJsonToStruct<Request>(validJson);
     ASSERT_TRUE(err.empty()) << "Correct case failed";
-    if (!err.empty()) {
-        for (const auto& e : err) {
-            std::cout << e << std::endl;
-        }
-    }
     ASSERT_NE(result, nullptr);
     std::string validationError = validate(*result);
     EXPECT_TRUE(validationError.empty()) << "Validation failed: " << validationError;
