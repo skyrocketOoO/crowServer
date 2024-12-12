@@ -1,5 +1,4 @@
-#ifndef RULE_HPP
-#define RULE_HPP
+#pragma once
 
 #include <string>
 #include <functional>
@@ -230,5 +229,3 @@ namespace Rule {
     }
   }
 }
-
-#endif // RULE_HPP

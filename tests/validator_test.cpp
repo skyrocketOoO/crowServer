@@ -35,61 +35,72 @@ struct Request {
     }
 };
 
-TEST(Parser, NotWritable) {
-    std::string missingField = R"({
-        "name": "Sample Name"
-    })";
-    auto [result, err] = parseJsonToStruct<Request>(missingField);
-    ASSERT_FALSE(err.empty());
-    for (auto v : err){
-      std::cout << v << std::endl;
-    }
-}
-
 TEST(Parser, MissingRequiredField) {
-    std::string missingField = R"({
+    std::string req = R"({
         "id": "12345",
         "name": "Sample Name"
     })";
-    auto [result, err] = parseJsonToStruct<Request>(missingField);
+    auto [result, err] = Parser::Read<Request>(req);
     ASSERT_FALSE(err.empty());
-    const auto errSt = rfl::json::read<ErrorMissingField>(err[0]).value();
-    ASSERT_EQ(errSt.type, ErrorType::MissingField);
+    try {
+        const auto errSt = rfl::json::read<Parser::ErrorMissingField>(err[0]).value();
+        ASSERT_EQ(errSt.type, Parser::ErrorType::MissingField);
+    }catch (const std::exception& e){
+        std::cout << e.what() << std::endl;
+    }
 }
 
 TEST(Parser, IncorrectType) {
-    std::string incorrectType = R"({
+    std::string req = R"({
         "id": 12345
     })";
-    auto [result, err] = parseJsonToStruct<Request>(incorrectType);
+    auto [result, err] = Parser::Read<Request>(req);
     ASSERT_FALSE(err.empty());
+    try {
+        const auto errSt = rfl::json::read<Parser::ErrorIncorrectType>(err[0]).value();
+        ASSERT_EQ(errSt.type, Parser::ErrorType::IncorrectType);
+    }catch (const std::exception& e){
+        std::cout << e.what() << std::endl;
+    }
 }
 
 TEST(Parser, UnexpectedField) {
-    std::string unexpectedField = R"({
+    std::string req = R"({
         "desc": "Unexpected field"
     })";
-    auto [result, err] = parseJsonToStruct<Request>(unexpectedField);
+    auto [result, err] = Parser::Read<Request>(req);
     ASSERT_FALSE(err.empty());
+    try {
+        const auto errSt = rfl::json::read<Parser::ErrorUnknownField>(err[0]).value();
+        ASSERT_EQ(errSt.type, Parser::ErrorType::UnknownField);
+    }catch (const std::exception& e){
+        std::cout << e.what() << std::endl;
+    }
 }
 
 TEST(Parser, InvalidJson) {
-    std::string invalidJson = R"({
+    std::string req = R"({
         awefwafwafwafawafw
     })";
-    auto [result, err] = parseJsonToStruct<Request>(invalidJson);
+    auto [result, err] = Parser::Read<Request>(req);
     ASSERT_FALSE(err.empty());
+    try {
+        const auto errSt = rfl::json::read<Parser::ErrorInvalidJson>(err[0]).value();
+        ASSERT_EQ(errSt.type, Parser::ErrorType::InvalidJson);
+    }catch (const std::exception& e){
+        std::cout << e.what() << std::endl;
+    }
 }
 
 TEST(Parser, ValidJson) {
-    std::string validJson = R"({
+    std::string req = R"({
         "id": "12345",
         "nested": {
             "name": "a",
             "value": 11
         }
     })";
-    auto [result, err] = parseJsonToStruct<Request>(validJson);
+    auto [result, err] = Parser::Read<Request>(req);
     ASSERT_TRUE(err.empty()) << "Correct case failed";
     ASSERT_NE(result, nullptr);
     std::string validationError = validate(*result);

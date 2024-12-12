@@ -1,8 +1,11 @@
+#pragma once
+
 #include "error.hpp"
 #include "rfl/json.hpp"
 #include "rfl.hpp"
 #include "rfl/Processors.hpp"
 
+namespace Parser{
 
 std::vector<std::string> splitErrors(const std::string& errorMessage) {
     std::vector<std::string> errors;
@@ -22,7 +25,7 @@ std::vector<std::string> splitErrors(const std::string& errorMessage) {
 }
 
 template <typename T>
-std::pair<T*, std::vector<std::string>> parseJsonToStruct(const std::string& jsonStr) {
+std::pair<T*, std::vector<std::string>> Read(const std::string& jsonStr) {
     try {
         auto parsedResult = rfl::json::read<T, rfl::NoExtraFields>(jsonStr);
         return {new T(parsedResult.value()), {}};  // Return a new object on success
@@ -44,4 +47,6 @@ std::pair<T*, std::vector<std::string>> parseJsonToStruct(const std::string& jso
         return {nullptr, errs};
         // return {nullptr, e.what()};  // Return nullptr and the error message
     }
+}
+
 }

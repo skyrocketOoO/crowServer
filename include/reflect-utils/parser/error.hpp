@@ -1,11 +1,12 @@
-#ifndef PARSERERROR_HPP
-#define PARSERERROR_HPP
+#pragma once
 
 #include <string>
 #include <variant>
 #include <regex>
 #include "rfl.hpp"
 #include "rfl/json.hpp"
+
+namespace Parser{
 
 enum class ErrorType {
     MissingField,
@@ -69,4 +70,4 @@ std::string mapErrors(const std::string& errorMessage) {
     return rfl::json::write(err);
 }
 
-#endif //PARSERERROR_HPP
+}
