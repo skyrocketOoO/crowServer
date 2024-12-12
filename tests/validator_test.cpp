@@ -3,8 +3,11 @@
 #include <vector>
 #include <iostream>
 #include "reflect-utils/parser/parser.hpp"
+#include "reflect-utils/parser/error.hpp"
 #include "reflect-utils/validator/validator.hpp"
 #include "reflect-utils/validator/rule.hpp"
+#include "rfl.hpp"
+#include "rfl/json.hpp"
 
 struct Request {
     std::string id;
@@ -32,17 +35,29 @@ struct Request {
     }
 };
 
+TEST(Parser, NotWritable) {
+    std::string missingField = R"({
+        "name": "Sample Name"
+    })";
+    auto [result, err] = parseJsonToStruct<Request>(missingField);
+    ASSERT_FALSE(err.empty());
+    for (auto v : err){
+      std::cout << v << std::endl;
+    }
+}
 
-TEST(JsonParsingTests, MissingRequiredField) {
+TEST(Parser, MissingRequiredField) {
     std::string missingField = R"({
         "id": "12345",
         "name": "Sample Name"
     })";
     auto [result, err] = parseJsonToStruct<Request>(missingField);
     ASSERT_FALSE(err.empty());
+    const auto errSt = rfl::json::read<ErrorMissingField>(err[0]).value();
+    ASSERT_EQ(errSt.type, ErrorType::MissingField);
 }
 
-TEST(JsonParsingTests, IncorrectType) {
+TEST(Parser, IncorrectType) {
     std::string incorrectType = R"({
         "id": 12345
     })";
@@ -50,7 +65,7 @@ TEST(JsonParsingTests, IncorrectType) {
     ASSERT_FALSE(err.empty());
 }
 
-TEST(JsonParsingTests, UnexpectedField) {
+TEST(Parser, UnexpectedField) {
     std::string unexpectedField = R"({
         "desc": "Unexpected field"
     })";
@@ -58,7 +73,7 @@ TEST(JsonParsingTests, UnexpectedField) {
     ASSERT_FALSE(err.empty());
 }
 
-TEST(JsonParsingTests, InvalidJson) {
+TEST(Parser, InvalidJson) {
     std::string invalidJson = R"({
         awefwafwafwafawafw
     })";
@@ -66,7 +81,7 @@ TEST(JsonParsingTests, InvalidJson) {
     ASSERT_FALSE(err.empty());
 }
 
-TEST(JsonParsingTests, ValidJson) {
+TEST(Parser, ValidJson) {
     std::string validJson = R"({
         "id": "12345",
         "nested": {

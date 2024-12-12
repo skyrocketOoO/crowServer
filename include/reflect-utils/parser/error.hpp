@@ -1,3 +1,6 @@
+#ifndef PARSERERROR_HPP
+#define PARSERERROR_HPP
+
 #include <string>
 #include <variant>
 #include <regex>
@@ -65,3 +68,5 @@ std::string mapErrors(const std::string& errorMessage) {
 
     return rfl::json::write(err);
 }
+
+#endif //PARSERERROR_HPP
