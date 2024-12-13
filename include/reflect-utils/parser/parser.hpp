@@ -27,6 +27,7 @@ std::vector<std::string> splitErrors(const std::string& errorMessage) {
 template <typename T>
 std::pair<T*, std::vector<std::string>> Read(const std::string& jsonStr) {
     try {
+        std::cout << "parser.read" << std::endl;
         auto parsedResult = rfl::json::read<T, rfl::NoExtraFields>(jsonStr);
         return {new T(parsedResult.value()), {}};  // Return a new object on success
     } catch (const std::exception& e) {

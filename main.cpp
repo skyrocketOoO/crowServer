@@ -34,24 +34,26 @@ void from_json(const json& j, JsonValue& value) {
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
+    std::cout << RUN_ALL_TESTS() << std::endl;
 
-    std::string input = R"(
-        true
-    )";
 
-    json j = json::parse(input);
+    // std::string input = R"(
+    //     true
+    // )";
 
-    JsonValue value;
+    // json j = json::parse(input);
 
-    try {
-        from_json(j, value);
+    // JsonValue value;
 
-        std::visit([](const auto& v) { 
-            std::cout << "Parsed value: " << v << std::endl; 
-        }, value);
-    } catch (const std::exception& e) {
-        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
-    }
+    // try {
+    //     from_json(j, value);
+
+    //     std::visit([](const auto& v) { 
+    //         std::cout << "Parsed value: " << v << std::endl; 
+    //     }, value);
+    // } catch (const std::exception& e) {
+    //     std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+    // }
 
     return 0;
 }
