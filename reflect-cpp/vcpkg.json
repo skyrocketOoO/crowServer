@@ -1,0 +1,79 @@
+{
+  "name": "reflectcpp",
+  "version-string": "0.16.0",
+  "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
+  "dependencies": [
+    {
+      "name": "ctre",
+      "version>=": "3.8"
+    },
+    {
+      "name": "flatbuffers",
+      "version>=": "23.5.26#1"
+    },
+    {
+      "name": "libbson",
+      "version>=": "1.25.1"
+    },
+    {
+      "name": "jsoncons",
+      "version>=": "0.176.0"
+    },
+    {
+      "name": "msgpack-c",
+      "version>=": "6.0.0"
+    },
+    {
+      "name": "nlohmann-json",
+      "version>=": "3.11.3"
+    },
+    {
+      "name": "pugixml",
+      "version>=": "1.14"
+    },
+    {
+      "name": "rapidjson",
+      "version>=": "2023-07-17"
+    },
+    {
+      "name": "simdjson",
+      "version>=": "3.9.3"
+    },
+    {
+      "name": "tinycbor",
+      "version>=": "0.6.0"
+    },
+    {
+      "name": "tomlplusplus",
+      "version>=": "3.4.0"
+    },
+    {
+      "name": "yaml-cpp",
+      "version>=": "0.8.0#1"
+    },
+    {
+      "name": "yyjson",
+      "version>=": "0.10.0"
+    },
+    {
+      "name": "benchmark",
+      "version>=": "1.8.3"
+    },
+    {
+      "name": "gtest",
+      "version>=": "1.14.0"
+    },
+    {
+      "name": "vcpkg-cmake",
+      "version>=": "2023-05-04"
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "version>=": "2022-02-06#1"
+    },
+    {
+      "name":"vcpkg-pkgconfig-get-modules",
+      "version>=": "2024-04-03"
+    }
+  ]
+}
