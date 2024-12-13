@@ -8,6 +8,10 @@
 #include "reflect-utils/validator/rule.hpp"
 #include "rfl.hpp"
 #include "rfl/json.hpp"
+#include <variant>
+
+
+
 
 struct Request {
     std::string id;
@@ -103,6 +107,65 @@ TEST(Parser, ValidJson) {
     auto [result, err] = Parser::Read<Request>(req);
     ASSERT_TRUE(err.empty()) << "Correct case failed";
     ASSERT_NE(result, nullptr);
+}
+
+TEST(Validator, Nested) {
+    std::string req = R"({
+        "id": "12345",
+        "nested": {
+            "name": "a",
+            "value": 9
+        }
+    })";
+    auto [result, err] = Parser::Read<Request>(req);
+    ASSERT_TRUE(err.empty()) << "Correct case failed";
+    ASSERT_NE(result, nullptr);
     std::string validationError = validate(*result);
-    EXPECT_TRUE(validationError.empty()) << "Validation failed: " << validationError;
+    EXPECT_FALSE(validationError.empty());
+}
+
+TEST(Validator, Or) {
+    std::string req = R"({
+        "id": "12345",
+        "nested": {
+            "name": "a",
+            "value": 9
+        }
+    })";
+    auto [result, err] = Parser::Read<Request>(req);
+    ASSERT_TRUE(err.empty()) << "Correct case failed";
+    ASSERT_NE(result, nullptr) << "Correct case failed";
+    std::string validationError = validate(*result);
+    EXPECT_FALSE(validationError.empty());
+}
+
+TEST(Validator, In) {
+    std::string req = R"({
+        "id": "12345",
+        "nested": {
+            "name": "c",
+            "value": 9
+        }
+    })";
+    auto [result, err] = Parser::Read<Request>(req);
+    ASSERT_TRUE(err.empty()) << "Correct case failed";
+    ASSERT_NE(result, nullptr) << "Correct case failed";
+    std::string validationError = validate(*result);
+    EXPECT_FALSE(validationError.empty());
+}
+
+TEST(Validator, NotWritable) {
+    std::string req = R"({
+        "id": "12345",
+        "name": "gg",
+        "nested": {
+            "name": "a",
+            "value": 9
+        }
+    })";
+    auto [result, err] = Parser::Read<Request>(req);
+    ASSERT_TRUE(err.empty()) << "Correct case failed";
+    ASSERT_NE(result, nullptr) << "Correct case failed";
+    std::string validationError = validate(*result);
+    EXPECT_FALSE(validationError.empty());
 }
