@@ -77,11 +77,13 @@ struct Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
+    std::cout << "json.read_object" << std::endl;
     yyjson_obj_iter iter;
     yyjson_obj_iter_init(_obj.val_, &iter);
     yyjson_val* key;
     while ((key = yyjson_obj_iter_next(&iter))) {
       const auto name = std::string_view(yyjson_get_str(key));
+      std::cout << "string_view(yyjson_get_str(key)):" << name << std::endl;
       _object_reader.read(name, InputVarType(yyjson_obj_iter_get_val(key)));
     }
     return std::nullopt;

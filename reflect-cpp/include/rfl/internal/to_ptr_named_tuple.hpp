@@ -60,17 +60,24 @@ template <class T>
 auto to_ptr_named_tuple(T&& _t) {
   if constexpr (has_fields<std::remove_cvref_t<T>>()) {
     if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
+      std::cout << "std::is_pointer_v" << std::endl;
       return to_ptr_named_tuple(*_t);
     } else if constexpr (is_named_tuple_v<std::remove_cvref_t<T>>) {
+      std::cout << "is_named_tuple_v" << std::endl;
       return nt_to_ptr_named_tuple(_t);
     } else {
+      std::cout << "else" << std::endl;
       auto ptr_field_tuple = to_ptr_field_tuple(_t);
       return field_tuple_to_named_tuple(ptr_field_tuple);
     }
   } else if constexpr (is_empty<T>()) {
+    std::cout << "is_empty" << std::endl;
     return rfl::NamedTuple<>();
   } else {
+    std::cout << "outer else" << std::endl;
     using FieldNames = rfl::field_names_t<T>;
+    std::cout << "type: " << typeid(std::remove_cvref_t<T>).name() << std::endl;
+    // std::cout << "field_names: " <<  typeid(FieldNames).name() << std::endl;
     auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
     return copy_flattened_tuple_to_named_tuple<FieldNames>(flattened_ptr_tuple);
   }

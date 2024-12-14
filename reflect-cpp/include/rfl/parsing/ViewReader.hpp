@@ -16,7 +16,7 @@
 namespace rfl::parsing {
 
 template <class R, class W, class ViewType, class ProcessorsType>
-class ViewReader {
+class ViewReader { // here
  private:
   using InputVarType = typename R::InputVarType;
   static constexpr size_t size_ = ViewType::size();

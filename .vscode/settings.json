@@ -83,6 +83,7 @@
     "cfenv": "cpp",
     "*.inc": "cpp",
     "regex": "cpp",
-    "span": "cpp"
+    "span": "cpp",
+    "*.def": "cpp"
   }
 }

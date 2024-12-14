@@ -51,7 +51,7 @@ struct NamedTupleParser {
   using ViewReaderType = std::conditional_t<
       _no_field_names,
       ViewReaderWithStrippedFieldNames<R, W, NamedTupleType, ProcessorsType>,
-      ViewReader<R, W, NamedTupleType, ProcessorsType>>;
+      ViewReader<R, W, NamedTupleType, ProcessorsType>>; // here
 
   using ViewReaderWithDefaultType = std::conditional_t<
       _no_field_names,
@@ -115,11 +115,13 @@ struct NamedTupleParser {
       }
       return read_object_or_array(_r, *arr, _view);
     } else {
+      // here
       auto obj = _r.to_object(_var);
       if (!obj) [[unlikely]] {
         auto set = std::array<bool, NamedTupleType::size()>{};
         return std::make_pair(set, obj.error());
       }
+      std::cout << "read_object_or_array" << std::endl;
       return read_object_or_array(_r, *obj, _view);
     }
   }
@@ -309,7 +311,11 @@ struct NamedTupleParser {
     if constexpr (_no_field_names) {
       err = _r.read_array(reader, _obj_or_arr);
     } else {
+      std::cout << "read_object" << std::endl;
       err = _r.read_object(reader, _obj_or_arr);
+      // _view->apply([](const auto& f){
+      //   std::cout << f.name() << ":" << rfl::json::write(*f.value())  << std::endl;
+      // });
     }
     if (err) {
       return std::make_pair(set, err);

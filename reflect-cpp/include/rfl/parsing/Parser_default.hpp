@@ -28,6 +28,7 @@
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
+#include "../json/write.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -255,8 +256,10 @@ struct Parser {
   /// views and placement new. This is how we deal with the fact that some
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
+    std::cout << "readstruct"  << std::endl;
     alignas(T) unsigned char buf[sizeof(T)]{};
     auto ptr = std::bit_cast<T*>(&buf);
+    std::cout << "ptr type: " << typeid(*ptr).name() << std::endl;
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
@@ -265,6 +268,9 @@ struct Parser {
       call_destructors_where_necessary(set, &view);
       return *err;
     }
+    // view.apply([](const auto& f){
+    //   std::cout << f.name() << ":" << rfl::json::write(*f.value())  << std::endl;
+    // });
     auto res = Result<T>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
     return res;

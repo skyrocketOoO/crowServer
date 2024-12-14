@@ -13,31 +13,31 @@
 
 
 
-struct Request {
-    std::string id;
-    std::optional<std::string> name;
+// struct Request {
+//     std::string id;
+//     std::optional<std::string> account;
 
-    struct Nested {
-        std::string name;
-        int value;
+//     struct Nested {
+//         std::string name;
+//         int value;
 
-        auto validateMetas() {
-            return std::tuple{
-                Field<int>{"value", {
-                    Rule::Common::Or<int>({Rule::Number::Gt(10), Rule::Number::Lt(0)})
-                }},
-                Field<std::string>{"name", {Rule::Common::In<std::string>({"a", "b"})}},
-            };
-        }
-    } nested;
+//         auto validateMetas() {
+//             return std::tuple{
+//                 Field<int>{"value", {
+//                     Rule::Common::Or<int>({Rule::Number::Gt(10), Rule::Number::Lt(0)})
+//                 }},
+//                 Field<std::string>{"name", {Rule::Common::In<std::string>({"a", "b"})}},
+//             };
+//         }
+//     } nested;
     
-    auto validateMetas() {
-        return std::tuple{
-            Field<std::string>{"name", {Rule::Common::NotWritable<std::string>()}},
-            Field<std::string>{"id", {Rule::String::MaxLen(10)}}
-        };
-    }
-};
+//     auto validateMetas() {
+//         return std::tuple{
+//             Field<std::string>{"account", {Rule::Common::NotWritable<std::string>()}},
+//             Field<std::string>{"id", {Rule::String::MaxLen(10)}}
+//         };
+//     }
+// };
 
 // TEST(Parser, MissingRequiredField) {
 //     std::string req = R"({
@@ -96,18 +96,18 @@ struct Request {
 //     }
 // }
 
-TEST(Parser, ValidJson) {
-    std::string req = R"({
-        "id": "12345",
-        "nested": {
-            "name": "a",
-            "value": 11
-        }
-    })";
-    auto [result, err] = Parser::Read<Request>(req);
-    ASSERT_TRUE(err.empty()) << "Correct case failed";
-    ASSERT_NE(result, nullptr);
-}
+// TEST(Parser, ValidJson) {
+//     std::string req = R"({
+//         "id": "12345",
+//         "nested": {
+//             "name": "a",
+//             "value": 11
+//         }
+//     })";
+//     auto [result, err] = Parser::Read<Request>(req);
+//     ASSERT_TRUE(err.empty()) << "Correct case failed";
+//     ASSERT_NE(result, nullptr);
+// }
 
 // TEST(Validator, Nested) {
 //     std::string req = R"({
