@@ -157,7 +157,6 @@ struct Reader {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
           const char* k = bson_iter_key(&iter);
-          std::cout << std::string_view(k) << std::endl;
           _object_reader.read(std::string_view(k), to_input_var(&iter));
         }
       } else {
