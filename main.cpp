@@ -55,8 +55,8 @@ std::string type_to_string(json::value_t type) {
 }
 
 int main(int argc, char** argv) {
-    // ::testing::InitGoogleTest(&argc, argv);
-    // std::cout << RUN_ALL_TESTS() << std::endl;
+    ::testing::InitGoogleTest(&argc, argv);
+    std::cout << RUN_ALL_TESTS() << std::endl;
 
     crow::SimpleApp app;
 
