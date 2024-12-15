@@ -17,22 +17,42 @@
 #include <array>
 #include <string_view>
 #include "crow_all.h"
+using json = nlohmann::json;
 
 template <typename T, typename Field>
 concept HasMember = requires(T t) {
     { t.*Field() };  // Check if we can access the member field using T.*Field()
 };
 
+std::string demangle(const char* name) {
+    int status = 0;
+    std::unique_ptr<char[], void(*)(void*)> demangled(
+        abi::__cxa_demangle(name, nullptr, nullptr, &status),
+        std::free
+    );
+    return (status == 0) ? demangled.get() : name;
+}
+
+std::string type_to_string(json::value_t type) {
+    switch (type) {
+        case json::value_t::null: return "null";
+        case json::value_t::boolean: return "boolean";
+        case json::value_t::number_integer: return "integer";
+        case json::value_t::number_unsigned: return "unsigned integer";
+        case json::value_t::number_float: return "float";
+        case json::value_t::string: return "string";
+        case json::value_t::object: return "object";
+        case json::value_t::array: return "array";
+        case json::value_t::binary: return "binary";
+        case json::value_t::discarded: return "discarded";
+        default: return "unknown type";
+    }
+}
+
 
 int main(int argc, char** argv) {
     // ::testing::InitGoogleTest(&argc, argv);
     // std::cout << RUN_ALL_TESTS() << std::endl;
-
-    // std::string jsonStr = R"({
-    //     "id": "12345",
-    //     "name": "Sample Name"
-    // })";
-    // nlohmann::json j = nlohmann::json::parse(jsonStr);
 
     crow::SimpleApp app;
 
@@ -40,8 +60,10 @@ int main(int argc, char** argv) {
         struct Request {
             std::string id;
             std::string name;
+            struct Nested {
+                std::string value;
+            } nested;
         };
-        using json = nlohmann::json;
         json j = json::parse(req.body);
 
         Request request;
@@ -49,50 +71,30 @@ int main(int argc, char** argv) {
         const auto view = rfl::to_view(request);
 
 
-
         for (auto it : j.items()){
             const std::string& key = it.key();
             // std::cout << key << std::endl;
             auto get = [key, view, it]<std::size_t... _is>(std::index_sequence<_is...>) {
-                // Use a fold expression over initializer_list to iterate and check field names
-                (void)std::initializer_list<int>{
-                    (
-                        [key, view, it]() {
-                            auto name = rfl::internal::get_field_name<
-                                std::remove_cvref_t<Request>,
-                                rfl::internal::get_ith_field_from_fake_object<Request, _is>()
-                            >().name();
-                            // std::cout << name << std::endl;
-                            if (name == key) {
-                                *rfl::get<_is>(view) = it.value();
-                                std::cout << name << std::endl;
-                            }
-
-                        }(),
-                        0 // Fold expression placeholder
-                    )...
-                };
+                (
+                    [&]() {
+                        auto field = rfl::internal::get_field_name<
+                            std::remove_cvref_t<Request>,
+                            rfl::internal::get_ith_field_from_fake_object<Request, _is>()
+                        >();
+                        if (field.name() == key) {
+                            std::cout << "field: " << demangle(typeid(field).name()) << std::endl;
+                            std::cout << "key: " << type_to_string(it.value().type()) << std::endl;
+                            // *rfl::get<_is>(view) = it.value();
+                        }
+                    }(),
+                    ...
+                );
             }; 
             get(std::make_index_sequence<rfl::internal::num_fields<Request>>());
         }
 
         std::cout << request.id << std::endl;
         std::cout << request.name << std::endl;
-
-        
-        // const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
-        //     // Use fold expression to expand the parameter pack and call get_field_name for each index
-        //     (void)std::initializer_list<int>{
-        //         ((std::cout << rfl::internal::get_field_name<
-        //             std::remove_cvref_t<Request>,
-        //             rfl::internal::get_ith_field_from_fake_object<Request, _is>() // Correct usage
-        //         >().name() << std::endl), 0)...};  // Print each field name
-        // };
-
-        // get(std::make_index_sequence<rfl::internal::num_fields<Request>>());
-
-        // rfl::internal::get_field_name<std::remove_cvref_t<Request>, rfl::internal::get_ith_field_from_fake_object<Request, 1>()>();
-        // std::cout << name.name() << std::endl;
 
 
         return crow::response(200);
